@@ -8,6 +8,6 @@ fix-lint: development-dependencies
 	@pipenv run black .
 
 unit-test: development-dependencies
-	@pipenv run pyhton3 -m unittest
+	@pipenv run python3 -m unittest
 
 test: lint unit-test
