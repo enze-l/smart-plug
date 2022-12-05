@@ -22,5 +22,14 @@ A smart plug with an interchangeable API
 There are some utility functions defined in the [Makefile](./Makefile) of this Project.
 They should simplify the development cycle by defining different stages. You can use them for running tests, linting, installing dependencies etc.
 
-Example for running all unit-tests:
+Run unit-tests:
 ```make unit-test```
+
+Run linter:
+```make lint```
+
+Fix formatting:
+```make fix-lint```
+
+Run tests and check linting:
+```make test```
