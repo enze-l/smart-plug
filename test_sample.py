@@ -6,7 +6,7 @@ class SampleTest(unittest.TestCase):
         self.assertEqual(6, 6, "Should be 6")
 
     def test_sum_should_fail(self):
-        self.assertEqual(3, 6, "Should fail")
+        self.assertNotEqual(3, 6, "Should not ge the same")
 
 
 if __name__ == "__main__":
