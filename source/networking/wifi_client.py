@@ -20,6 +20,6 @@ class WifiClient:
     def __establish_connection(self):
         print("connecting to network...")
         self.wifi.active(True)
-        self.wifi.connect(self.wifi_ssid, self.wifi_ssid)
+        self.wifi.connect(self.wifi_ssid, self.wifi_password)
         while not self.wifi.isconnected():
             pass

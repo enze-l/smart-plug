@@ -8,20 +8,30 @@ class TestWifi(unittest.TestCase):
         self.sample_ssid = "sample_ssid"
         self.sample_password = "sample_password"
 
-    def test_wifi_should_start(self):
-        wifi = WifiClient(self.sample_ssid, self.sample_password)
-        wifi.start()
-
-    @patch('source.networking.wifi_client.network')
-    def test_wifi_should_establish_connection(self, network):
+    @patch('source.networking.wifi_client.network.WLAN')
+    def test_wifi_should_establish_connection(self, wifi):
         wifi_client = WifiClient(self.sample_ssid, self.sample_password)
 
         wifi_client._WifiClient__establish_connection()
 
-        network.WLAN().active.assert_called_once()
-        network.WLAN().connect.assert_called_once()
-        network.WLAN().isconnected.assert_called_once()
+        wifi().active.assert_called_once_with(True)
+        wifi().connect.assert_called_once_with(self.sample_ssid, self.sample_password)
+        wifi().isconnected.assert_called_once()
 
+    @patch('source.networking.wifi_client.network.WLAN')
+    def test_wifi_should_establish_connection_after_retries(self, wifi):
+        wifi_client = WifiClient(self.sample_ssid, self.sample_password)
+        wifi().isconnected.side_effect = [False, False, True]
+
+        wifi_client._WifiClient__establish_connection()
+
+        wifi().active.assert_called_once_with(True)
+        wifi().connect.assert_called_once_with(self.sample_ssid, self.sample_password)
+        assert(wifi().isconnected.call_count == 3)
+
+    def test_wifi_should_start(self):
+        wifi = WifiClient(self.sample_ssid, self.sample_password)
+        wifi.start()
 
 if __name__ == "__main__":
     unittest.main()
