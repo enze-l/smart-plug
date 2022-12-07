@@ -11,13 +11,13 @@ class WifiClient:
     def start(self):
         try:
             if not self.wifi.isconnected():
-                self.__establish_connection()
+                self.try_connecting()
             print("network config:", self.wifi.ifconfig())
         except OSError as error:
             print(error)
             machine.reset()
 
-    def __establish_connection(self):
+    def try_connecting(self):
         print("connecting to network...")
         self.wifi.active(True)
         self.wifi.connect(self.wifi_ssid, self.wifi_password)
