@@ -1,10 +1,7 @@
 import sys
-from unittest.mock import MagicMock
-
-network = MagicMock()
-machine = MagicMock()
+from unittest.mock import Mock
 
 
 def init_micropython_mock_modules():
-    sys.modules['network'] = network
-    sys.modules['machine'] = machine
+    sys.modules['network'] = Mock()
+    sys.modules['machine'] = Mock()
