@@ -1,6 +1,14 @@
 # Smart-Plug
 
-A smart plug with an interchangeable API
+A development platform with an interchangeable API for smart-plugs that utilize esp32 (untested on esp8266) chipset.
+
+# Installation
+1. Install [micropython](https://docs.micropython.org/en/latest/esp32/tutorial/intro.html) on the platform of your choice
+2. make a copy of [/source/config/sample_config.py](./source/config/sample_config.py) in the same directory
+3. rename the file to ```config.py```
+4. replace the sample values for the wifi with your own ones
+5. copy the content of [/source](./source) on onto your smart plug
+6. execute the main method
 
 # Development Setup
 

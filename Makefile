@@ -10,4 +10,7 @@ fix-lint: development-dependencies
 unit-test: development-dependencies
 	@pipenv run python3 -m unittest
 
+silent-unit-test: development-dependencies
+	@pipenv run python3 -m unittest
+
 test: lint unit-test
