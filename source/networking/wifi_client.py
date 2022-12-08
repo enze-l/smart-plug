@@ -20,6 +20,7 @@ class WifiClient:
     def try_connecting(self):
         print("connecting to network...")
         self.wifi.active(True)
+        self.wifi.config(dhcp_hostname="Micro-Plug")
         self.wifi.connect(self.wifi_ssid, self.wifi_password)
         while not self.wifi.isconnected():
             pass
