@@ -7,6 +7,7 @@ class TestWifi(unittest.TestCase):
     def setUp(self):
         self.sample_ssid = "sample_ssid"
         self.sample_password = "sample_password"
+        self.host_name = "Micro-Plug"
 
     @patch("source.networking.wifi_client.network.WLAN")
     def test_wifi_should_connect(self, wifi):
@@ -15,6 +16,7 @@ class TestWifi(unittest.TestCase):
         wifi_client.try_connecting()
 
         wifi().active.assert_called_once_with(True)
+        wifi().config.assert_called_once_with(dhcp_hostname=self.host_name)
         wifi().connect.assert_called_once_with(self.sample_ssid, self.sample_password)
         wifi().isconnected.assert_called_once()
 
@@ -26,6 +28,7 @@ class TestWifi(unittest.TestCase):
         wifi_client.try_connecting()
 
         wifi().active.assert_called_once_with(True)
+        wifi().config.assert_called_once_with(dhcp_hostname=self.host_name)
         wifi().connect.assert_called_once_with(self.sample_ssid, self.sample_password)
         assert wifi().isconnected.call_count == 3
 
