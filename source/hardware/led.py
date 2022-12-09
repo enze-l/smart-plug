@@ -20,13 +20,13 @@ class Led:
     def toggle():
         led_pin.value(not led_pin.value)
 
-    def set_state(self, desired_state):
+    def set_on_state(self, desired_state):
         if self.is_inverted:
             led_pin.value(not desired_state)
         else:
             led_pin.value(desired_state)
 
-    def get_state(self):
+    def get_on_state(self):
         if self.is_inverted:
             return not led_pin.value()
         else:
