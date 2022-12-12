@@ -2,11 +2,11 @@ from machine import Pin
 
 
 class BinaryOutput:
-    def __init__(self, pin, inverted_ouput):
+    def __init__(self, pin, inverted_output):
         self.pin = Pin(pin, Pin.OUT)
-        self.inverted_output = inverted_ouput
-        self.on_value = not inverted_ouput
-        self.off_value = inverted_ouput
+        self.inverted_output = inverted_output
+        self.on_value = not inverted_output
+        self.off_value = inverted_output
 
     def turn_on(self):
         self.pin.value(self.on_value)
@@ -15,7 +15,7 @@ class BinaryOutput:
         self.pin.value(self.off_value)
 
     def toggle(self):
-        self.pin.value(not self.pin.value)
+        self.pin.value(not self.pin.value())
 
     def set_on_state(self, desired_state):
         if self.inverted_output:

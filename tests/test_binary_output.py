@@ -38,10 +38,22 @@ class TestLed(unittest.TestCase):
         mock_pin().value.assert_called_once_with(inverted_off_value)
 
     @patch("source.hardware.binary_output.Pin")
-    def test_led_should_get_toggled(self, mock_pin):
+    def test_led_should_get_toggled_on(self, mock_pin):
         output = BinaryOutput(output_pin, standard)
+        mock_pin().value = Mock(return_value=off_value)
+
         output.toggle()
-        mock_pin().value.assert_called_once()
+
+        mock_pin().value.assert_called_with(on_value)
+
+    @patch("source.hardware.binary_output.Pin")
+    def test_led_should_get_toggled_off(self, mock_pin):
+        output = BinaryOutput(output_pin, standard)
+        mock_pin().value = Mock(return_value=on_value)
+
+        output.toggle()
+
+        mock_pin().value.assert_called_with(off_value)
 
     @patch("source.hardware.binary_output.Pin")
     def test_set_led_state(self, mock_pin):
