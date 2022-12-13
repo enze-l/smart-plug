@@ -9,7 +9,7 @@ class Button:
         self.function = None
         self.on_value = not inverted_input
         self.off_value = inverted_input
-        self.pin.irq(handler=self.__use_function)
+        self.pin.irq(handler=self.__execute_function_debounced)
 
         self.debounce_delay = debounce_delay_ms
         self.last_click_time = time.ticks_ms()
@@ -18,12 +18,15 @@ class Button:
     def set_function(self, function):
         self.function = function
 
-    def __use_function(self, irq):
-        button_state = self.pin.value()
-        click_time = time.ticks_ms()
-        if button_state != self.last_button_state:
-            debounced_time = time.ticks_diff(click_time, self.debounce_delay)
-            if time.ticks_diff(debounced_time, self.last_click_time) > 0:
-                self.last_click_time = click_time
-                self.last_button_state = button_state
-                self.function()
+    def __execute_function_debounced(self, irq):
+        time_of_click = time.ticks_ms()
+        current_button_state = self.pin.value()
+        if current_button_state == self.last_button_state:
+            return
+        min_elapsed_time = time.ticks_add(self.last_click_time, self.debounce_delay)
+        if time.ticks_diff(min_elapsed_time, time_of_click) > 0:
+            return
+        self.last_click_time = time_of_click
+        self.last_button_state = current_button_state
+        if current_button_state:
+            self.function()
