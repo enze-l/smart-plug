@@ -6,10 +6,7 @@ class Button:
         self.inverted_input = inverted_input
         self.function = None
         self.on_value = not inverted_input
-        self.off_value = inverted_input
-
         self.debouncer = Debouncer(pin, self.on_value, debounce_delay_ms)
 
     def set_function(self, function):
         self.debouncer.set_function(function)
-
