@@ -8,7 +8,6 @@ host_name = "Micro-Plug"
 
 
 class TestWifi(unittest.TestCase):
-
     @patch("source.networking.wifi_client.network.WLAN")
     def test_wifi_should_connect(self, wifi):
         wifi_client = WifiClient(sample_ssid, sample_password)

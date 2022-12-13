@@ -12,7 +12,6 @@ output_pin = 0
 
 
 class TestLed(unittest.TestCase):
-
     @patch("source.hardware.binary_output.Pin")
     def test_led_should_turn_on(self, mock_pin):
         output = BinaryOutput(output_pin, standard)
