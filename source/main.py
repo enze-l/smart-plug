@@ -6,4 +6,4 @@ wifi_client = WifiClient(WIFI_SSID, WIFI_PASSWORD)
 wifi_client.start()
 
 
-hardware.button.set_function(hardware.led.toggle)
+hardware.button.set_on_toggle_function(hardware.led.toggle)

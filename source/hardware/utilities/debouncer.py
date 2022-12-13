@@ -3,17 +3,24 @@ from machine import Pin
 
 
 class Debouncer:
-    def __init__(self, pin, on_state, debounce_delay_ms):
-        self.function = None
+    def __init__(self, pin, initial_state, debounce_delay_ms):
+        self.on_toggle_function = None
+        self.on_release_function = None
+        self.on_click_function = None
         self.pin = Pin(pin, Pin.IN, Pin.PULL_UP)
         self.debounce_delay = debounce_delay_ms
         self.last_click_time = time.ticks_ms()
-        self.on_state = on_state
-        self.last_button_state = not on_state
+        self.last_button_state = initial_state
         self.pin.irq(handler=self.__debounce_function)
 
-    def set_function(self, function):
-        self.function = function
+    def set_on_release_function(self, function):
+        self.on_release_function = function
+
+    def set_on_click_function(self, function):
+        self.on_click_function = function
+
+    def set_on_toggle_function(self, function):
+        self.on_toggle_function = function
 
     def __debounce_function(self, irq):
         time_of_click = time.ticks_ms()
@@ -32,4 +39,8 @@ class Debouncer:
         self.last_click_time = time_of_click
         self.last_button_state = current_button_state
         if current_button_state:
-            self.function()
+            self.on_click_function()
+        else:
+            self.on_release_function()
+        self.on_toggle_function()
+
