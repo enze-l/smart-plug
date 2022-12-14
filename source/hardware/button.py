@@ -10,7 +10,7 @@ class Button:
         self.pin = Pin(pin, Pin.IN, Pin.PULL_UP)
         self.debounce_delay = debounce_delay_ms
         self.last_click_time = time.ticks_ms()
-        self.last_button_state = not inverted_input
+        self.last_button_state = inverted_input
         self.pin.irq(handler=self.__debounce_function)
 
     def set_on_click_function(self, function):
@@ -26,8 +26,10 @@ class Button:
         time_of_click = time.ticks_ms()
         current_button_state = self.pin.value()
         if current_button_state == self.last_button_state:
+            print("STATE")
             return
         if not self.__enough_time_has_lapsed_to_trigger(time_of_click):
+            print("TIME")
             return
         self.__execute_function_and_reset_(time_of_click, current_button_state)
 
