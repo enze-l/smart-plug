@@ -55,7 +55,9 @@ class TestButton(unittest.TestCase):
 
     @patch("source.hardware.button.Pin")
     @patch("source.hardware.button.time")
-    def test_click_and_release_should_trigger_toggle_function(self, mock_time, mock_pin):
+    def test_click_and_release_should_trigger_toggle_function(
+        self, mock_time, mock_pin
+    ):
         button = Button(input_pin, is_not_inverted)
         mock_pin().value = Mock(side_effect=[on_value, off_value])
         mock_time.ticks_diff = Mock(return_value=enough_time_passed_to_click)
