@@ -3,14 +3,15 @@ from machine import Pin
 
 
 class Button:
-    def __init__(self, pin, inverted_input, debounce_delay_ms=50):
+    def __init__(self, pin, is_inverted, debounce_delay_ms=50):
         self.on_toggle_function = None
         self.on_release_function = None
         self.on_click_function = None
         self.pin = Pin(pin, Pin.IN, Pin.PULL_UP)
+        self.is_inverted = is_inverted
         self.debounce_delay = debounce_delay_ms
         self.last_click_time = time.ticks_ms()
-        self.last_button_state = inverted_input
+        self.last_button_state = is_inverted
         self.pin.irq(handler=self.__debounce_function)
 
     def set_on_click_function(self, function):
@@ -26,10 +27,8 @@ class Button:
         time_of_click = time.ticks_ms()
         current_button_state = self.pin.value()
         if current_button_state == self.last_button_state:
-            print("STATE")
             return
         if not self.__enough_time_has_lapsed_to_trigger(time_of_click):
-            print("TIME")
             return
         self.__execute_function_and_reset_(time_of_click, current_button_state)
 
@@ -38,11 +37,13 @@ class Button:
         return time.ticks_diff(min_elapsed_time, time_of_click) < 0
 
     def __execute_function_and_reset_(self, time_of_click, current_button_state):
-        self.last_click_time = time_of_click
-        self.last_button_state = current_button_state
+        if self.is_inverted:
+            current_button_state = not current_button_state
         if self.on_click_function and current_button_state:
             self.on_click_function()
         if self.on_release_function and not current_button_state:
             self.on_release_function()
         if self.on_toggle_function:
             self.on_toggle_function()
+        self.last_click_time = time_of_click
+        self.last_button_state = current_button_state
