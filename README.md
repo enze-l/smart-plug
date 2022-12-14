@@ -7,8 +7,9 @@ A development platform with an interchangeable API for smart-plugs that utilize 
 2. make a copy of [/source/config/sample_config.py](./source/config/sample_config.py) in the same directory
 3. rename the file to ```config.py```
 4. replace the sample values for the wifi with your own ones
-5. copy the content of [/source](./source) on onto your smart plug
-6. execute the main method
+5. replace the values for the relay, gate and buttons with your own ones. If you're using the [reference hardware](https://www.shelly.cloud/de/products/product-overview/2xspl1pm/shelly-plus-1-pm), you can just stick to the predefined values 
+6. copy the content of [/source](./source) on onto your smart plug
+7. execute the main method
 
 # Development Setup
 
