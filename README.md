@@ -1,6 +1,6 @@
 # Smart-Plug
 
-A development platform with an interchangeable API for smart-plugs that utilize esp32 (untested on esp8266) chipset.
+A development platform with an interchangeable API for smart-plugs that utilize an esp32 (untested on esp8266) chipset.
 
 # Installation
 1. Install [micropython](https://docs.micropython.org/en/latest/esp32/tutorial/intro.html) on the platform of your choice
