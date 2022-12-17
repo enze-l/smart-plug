@@ -1,6 +1,5 @@
 import urequests
 import time
-import _thread
 
 
 class AwattarApi:
@@ -9,7 +8,7 @@ class AwattarApi:
         self.url = "https://api.awattar.de/v1/marketdata"
 
     def start(self):
-        _thread.start_new_thread(self.__loop_get_prices, ())
+        self.__loop_get_prices()
         print("scheduled")
 
     def stop(self):
@@ -22,4 +21,7 @@ class AwattarApi:
 
     def __get_prices(self):
         res = urequests.get("https://api.awattar.de/v1/marketdata")
+        secs_since_2000 = time.time()
+        utc_secs_till_2000 = 946681200
         print(res.text)
+        print(utc_secs_till_2000 + secs_since_2000)
