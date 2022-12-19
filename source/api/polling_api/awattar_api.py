@@ -1,24 +1,32 @@
 import urequests
 import time
 import uasyncio
+from micropython import const
+
+utc_secs_till_2000 = const(946681200)
 
 
 class AwattarApi:
     def __init__(self, hardware):
         self.relay = hardware.relay
         self.url = "https://api.awattar.de/v1/marketdata"
+        self.is_running = False
 
     def start(self):
-        while True:
+        self.is_running = True
+        while self.is_running:
             self.__get_api()
             await uasyncio.sleep(3)
-    
+
     def __get_api(self):
         res = urequests.get(self.url)
+        data = res.json()["data"]
+        for interval in data:
+            print("Price: " + str(interval["marketprice"]) + " - " + str(int(interval["start_timestamp"] / 1000)))
         secs_since_2000 = time.time()
-        utc_secs_till_2000 = 946681200
-        response_text = res.text
         print(utc_secs_till_2000 + secs_since_2000)
+        print(time.gmtime())
 
     def stop(self):
+        self.is_running = False
         pass
