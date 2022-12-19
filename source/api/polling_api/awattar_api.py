@@ -3,7 +3,7 @@ import time
 import uasyncio
 from micropython import const
 
-utc_secs_till_2000 = const(946681200)
+utc_secs_till_2000 = const(946684800)
 
 
 class AwattarApi:
@@ -21,9 +21,9 @@ class AwattarApi:
     def __get_api(self):
         res = urequests.get(self.url)
         data = res.json()["data"]
-        print(time.time())
+        print(time.time() + utc_secs_till_2000)
         for interval in data:
-            start_time = int(interval["start_timestamp"] / 1000 - utc_secs_till_2000)
+            start_time = int(interval["start_timestamp"])
             print("Price: " + str(interval["marketprice"]) + " - " + str(start_time))
 
     def stop(self):
