@@ -21,11 +21,10 @@ class AwattarApi:
     def __get_api(self):
         res = urequests.get(self.url)
         data = res.json()["data"]
+        print(time.time())
         for interval in data:
-            print("Price: " + str(interval["marketprice"]) + " - " + str(int(interval["start_timestamp"] / 1000)))
-        secs_since_2000 = time.time()
-        print(utc_secs_till_2000 + secs_since_2000)
-        print(time.gmtime())
+            start_time = int(interval["start_timestamp"] / 1000 - utc_secs_till_2000)
+            print("Price: " + str(interval["marketprice"]) + " - " + str(start_time))
 
     def stop(self):
         self.is_running = False
