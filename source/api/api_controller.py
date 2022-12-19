@@ -8,12 +8,7 @@ class APIController:
     def start(self):
         event_loop = uasyncio.get_event_loop()
         event_loop.create_task(self.api.start())
-        event_loop.create_task(self.stop_countdown())
         event_loop.run_forever()
-
-    def stop_countdown(self):
-        await uasyncio.sleep(10)
-        self.stop()
 
     def stop(self):
         self.api.stop()

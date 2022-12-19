@@ -1,7 +1,7 @@
 from config.config import WIFI_SSID, WIFI_PASSWORD
 from networking.wifi_client import WifiClient
 from networking import ntp_time
-from api.polling_api.awattar_api import AwattarApi
+from api.awattar.awattar_api import AwattarApi
 from hardware import hardware
 from api.api_controller import APIController
 

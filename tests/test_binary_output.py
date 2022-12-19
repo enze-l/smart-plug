@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase
 from unittest.mock import Mock, patch
 from source.hardware.binary_output import BinaryOutput
 
@@ -11,7 +11,7 @@ standard = False
 output_pin = 0
 
 
-class TestLed(unittest.TestCase):
+class TestLed(TestCase):
     @patch("source.hardware.binary_output.Pin")
     def test_led_should_turn_on(self, mock_pin):
         output = BinaryOutput(output_pin, standard)
@@ -83,7 +83,3 @@ class TestLed(unittest.TestCase):
         current_on_state = output.get_on_state()
 
         self.assertEqual(inverted_on_value, current_on_state)
-
-
-if __name__ == "__main__":
-    unittest.main()

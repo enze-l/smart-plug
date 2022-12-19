@@ -19,7 +19,7 @@ class AwattarApi:
         self.price_threshold_eur = TURN_ON_THRESHOLD_EUR
         self.automation_overriden = False
 
-    def start(self):
+    async def start(self):
         self.is_running = True
         while self.is_running:
             self.__cancel_all_tasks()
@@ -50,7 +50,7 @@ class AwattarApi:
         )
         self.tasks.append(task)
 
-    def __react_to_price_change(self, price, time_till_execution):
+    async def __react_to_price_change(self, price, time_till_execution):
         await uasyncio.sleep(time_till_execution)
         print("Executed time: " + str(time_till_execution))
         if price <= self.price_threshold_eur:
