@@ -19,24 +19,26 @@ class AwattarApi:
         self.price_threshold_eur = TURN_ON_THRESHOLD_EUR
         self.automation_overriden = False
 
-    def get_is_running(self):
-        print(self.is_running)
+    def __get_is_running(self):
         return self.is_running
 
+    def __set_is_running(self, is_running):
+        self.is_running = is_running
+
     async def start(self):
-        self.is_running = True
-        while self.get_is_running():
+        self.__set_is_running(True)
+        while self.__get_is_running():
             self.__cancel_all_tasks()
             self.__poll_api()
             twelve_hours_in_seconds = 12 * 60 * 60
             await uasyncio.sleep(twelve_hours_in_seconds)
 
-    def execute_button_behaviour(self):
+    def __execute_button_behaviour(self):
         self.relay.toggle()
         self.automation_overriden = True
 
-    def set_button_behaviour(self):
-        self.button.set_on_toggle_function(self.execute_button_behaviour)
+    def __set_button_behaviour(self):
+        self.button.set_on_toggle_function(self.__execute_button_behaviour)
 
     def __poll_api(self):
         res = urequests.get(self.url)
@@ -48,7 +50,6 @@ class AwattarApi:
     def __create_scheduled_task(self, start_timestamp, price):
         current_time = time.time()
         time_till_execution = start_timestamp - current_time
-        print(time_till_execution)
         task = uasyncio.create_task(
             self.__react_to_price_change(price, time_till_execution)
         )
@@ -58,20 +59,19 @@ class AwattarApi:
         await uasyncio.sleep(time_till_execution)
         print("Executed time: " + str(time_till_execution))
         if price <= self.price_threshold_eur:
-            self.toggle_relay_if_appropriate(True)
+            self.__toggle_relay_if_appropriate(True)
         else:
-            self.toggle_relay_if_appropriate(False)
+            self.__toggle_relay_if_appropriate(False)
 
-    def toggle_relay_if_appropriate(self, new_state):
+    def __toggle_relay_if_appropriate(self, new_state):
         automation_override_should_be_reset = new_state == self.relay.get_on_state()
         if automation_override_should_be_reset:
-            self.automation_overriden = True
+            self.automation_overriden = False
         if not self.automation_overriden:
             self.relay.set_on_state(new_state)
 
     def stop(self):
-        print("tasks canceled")
-        self.is_running = False
+        self.__set_is_running(False)
         self.__cancel_all_tasks()
 
     def __cancel_all_tasks(self):
