@@ -19,9 +19,13 @@ class AwattarApi:
         self.price_threshold_eur = TURN_ON_THRESHOLD_EUR
         self.automation_overriden = False
 
+    def get_is_running(self):
+        print(self.is_running)
+        return self.is_running
+
     async def start(self):
         self.is_running = True
-        while self.is_running:
+        while self.get_is_running():
             self.__cancel_all_tasks()
             self.__poll_api()
             twelve_hours_in_seconds = 12 * 60 * 60
