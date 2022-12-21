@@ -1,12 +1,11 @@
 import urequests
 import time
 import uasyncio
-from micropython import const
 from .awattar_config import TURN_ON_THRESHOLD_EUR
 
 # micropython measure time with seconds since th 1.1.2000
 # to convert this time to utc this variable serves as a reference
-utc_secs_till_2000 = const(946684800)
+utc_secs_till_2000 = 946684800
 
 
 class AwattarApi:
@@ -44,8 +43,8 @@ class AwattarApi:
         res = urequests.get(self.url)
         data = res.json()["data"]
         for interval in data:
-            start_time = int(interval["start_timestamp"] / 1000 - utc_secs_till_2000)
-            self.__create_scheduled_task(start_time, interval["marketprice"])
+            start_time_sec_esp_utc = int(interval["start_timestamp"] / 1000 - utc_secs_till_2000)
+            self.__create_scheduled_task(start_time_sec_esp_utc, interval["marketprice"])
 
     def __create_scheduled_task(self, start_timestamp, price):
         current_time = time.time()
