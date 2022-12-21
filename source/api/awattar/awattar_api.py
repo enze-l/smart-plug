@@ -51,11 +51,11 @@ class AwattarApi:
         current_time = time.time()
         time_till_execution = start_timestamp - current_time
         task = uasyncio.create_task(
-            self.__react_to_price_change(price, time_till_execution)
+            self.__react_to_price_change(time_till_execution, price)
         )
         self.tasks.append(task)
 
-    async def __react_to_price_change(self, price, time_till_execution):
+    async def __react_to_price_change(self, time_till_execution, price):
         await uasyncio.sleep(time_till_execution)
         print("Executed time: " + str(time_till_execution))
         if price <= self.price_threshold_eur:

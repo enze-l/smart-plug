@@ -2,6 +2,7 @@ from unittest import IsolatedAsyncioTestCase
 import uasyncio
 from unittest.mock import Mock, patch, call
 from source.api.awattar.awattar_api import AwattarApi
+import warnings
 
 
 class TestAwattarAPI(IsolatedAsyncioTestCase):
@@ -78,7 +79,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         time_till_execution = 0
         await uasyncio.run(
             await api._AwattarApi__react_to_price_change(
-                too_high_price, time_till_execution
+                time_till_execution, too_high_price
             )
         )
 
@@ -102,5 +103,24 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         mock_relay_toggle_function.assert_called_once_with(True)
 
-    async def test_create_scheduled_task(self):
-        pass
+    @patch("source.api.awattar.awattar_api.AwattarApi._AwattarApi__react_to_price_change")
+    @patch("source.api.awattar.awattar_api.uasyncio")
+    @patch("source.api.awattar.awattar_api.time")
+    def test_create_scheduled_task(self, mock_time, mock_uasyncio, mock_react_to_price_change):
+        warnings.simplefilter("ignore", RuntimeWarning)
+
+        hardware = Mock()
+        api = AwattarApi(hardware)
+        time_of_execution = 1400
+        price_at_time_of_execution = 250
+        current_time = 800
+        mock_time.time.return_value = current_time
+        time_till_execution = time_of_execution - current_time
+
+        api._AwattarApi__create_scheduled_task(
+            time_of_execution, price_at_time_of_execution
+        )
+
+        mock_react_to_price_change.assert_called_once_with(time_till_execution, price_at_time_of_execution)
+        mock_uasyncio.create_task.assert_called_once()
+        assert len(api.tasks) == 1
