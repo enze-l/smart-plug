@@ -1,6 +1,5 @@
 from unittest import IsolatedAsyncioTestCase
-import uasyncio
-from unittest.mock import Mock, patch, call
+from unittest.mock import Mock, AsyncMock, patch, call
 from source.api.awattar.awattar_api import AwattarApi
 import warnings
 
@@ -13,12 +12,12 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         is_running.side_effect = [True, False]
 
         api = AwattarApi(hardware)
-        mock_poll_request = Mock()
+        mock_poll_request = AsyncMock()
         api._AwattarApi__poll_api = mock_poll_request
         mock_cancel_tasks = Mock()
         api._AwattarApi__cancel_all_tasks = mock_cancel_tasks
 
-        await uasyncio.run(await api.start())
+        await api.start()
 
         mock_poll_request.assert_called_once()
         mock_cancel_tasks.assert_called_once()
@@ -77,10 +76,8 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         too_high_price = 250
         time_till_execution = 0
-        await uasyncio.run(
-            await api._AwattarApi__react_to_price_change(
-                time_till_execution, too_high_price
-            )
+        await api._AwattarApi__react_to_price_change(
+            time_till_execution, too_high_price
         )
 
         mock_relay_toggle_function.assert_called_once_with(False)
@@ -95,10 +92,8 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         low_enough_price = 180
         time_till_execution = 0
-        await uasyncio.run(
-            await api._AwattarApi__react_to_price_change(
-                low_enough_price, time_till_execution
-            )
+        await api._AwattarApi__react_to_price_change(
+            low_enough_price, time_till_execution
         )
 
         mock_relay_toggle_function.assert_called_once_with(True)
@@ -106,7 +101,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
     @patch("source.api.awattar.awattar_api.AwattarApi._AwattarApi__react_to_price_change")
     @patch("source.api.awattar.awattar_api.uasyncio")
     @patch("source.api.awattar.awattar_api.time")
-    def test_create_scheduled_task(self, mock_time, mock_uasyncio, mock_react_to_price_change):
+    def test_create_scheduled_price_change_reaction(self, mock_time, mock_uasyncio, mock_react_to_price_change):
         warnings.simplefilter("ignore", RuntimeWarning)
         hardware = Mock()
         api = AwattarApi(hardware)
@@ -116,7 +111,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_time.time.return_value = current_time
         time_till_execution = time_of_execution - current_time
 
-        api._AwattarApi__create_scheduled_task(
+        api._AwattarApi__schedule_price_change_reaction(
             time_of_execution, price_at_time_of_execution
         )
 
@@ -124,37 +119,60 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_uasyncio.create_task.assert_called_once()
         assert len(api.tasks) == 1
 
-    @patch("source.api.awattar.awattar_api.AwattarApi._AwattarApi__create_scheduled_task")
+    @patch("source.api.awattar.awattar_api.AwattarApi._AwattarApi__process_price_changes")
     @patch("source.api.awattar.awattar_api.urequests")
-    def test_poll_api(self, mock_urequest, mock_create_task):
-        mock_urequest.get().json.return_value = {
-            "object": "list",
-            "data": [
-                {
-                    "start_timestamp": 1671098400000,
-                    "end_timestamp": 1671102000000,
-                    "marketprice": 450.72,
-                    "unit": "Eur/MWh"
-                },
-                {
-                    "start_timestamp": 1671102000000,
-                    "end_timestamp": 1671105600000,
-                    "marketprice": 406.56,
-                    "unit": "Eur/MWh"
-                },
-                {
-                    "start_timestamp": 1671105600000,
-                    "end_timestamp": 1671109200000,
-                    "marketprice": 396.53,
-                    "unit": "Eur/MWh"
-                }
-            ],
-            "url": "/de/v1/marketdata"
-        }
+    @patch("source.api.awattar.awattar_api.uasyncio")
+    async def test_poll_api_succeeds(self, mock_uasyncio, mock_urequest, mock_process_changes):
+        mock_urequest.get().status_code = 200
 
         hardware = Mock()
         api = AwattarApi(hardware)
 
-        api._AwattarApi__poll_api()
+        await api._AwattarApi__poll_api()
 
-        assert mock_create_task.call_count == 3
+        mock_process_changes.assert_called_once()
+        mock_uasyncio.create_task.assert_not_called()
+
+    @patch("source.api.awattar.awattar_api.AwattarApi._AwattarApi__process_price_changes")
+    @patch("source.api.awattar.awattar_api.urequests")
+    @patch("source.api.awattar.awattar_api.uasyncio")
+    async def test_poll_api_fails(self, mock_uasyncio, mock_urequest, mock_process_changes):
+        mock_urequest.get().status_code = 404
+
+        hardware = Mock()
+        api = AwattarApi(hardware)
+
+        await api._AwattarApi__poll_api()
+
+        mock_process_changes.assert_not_called()
+        mock_uasyncio.create_task.assert_called_once()
+
+    @patch("source.api.awattar.awattar_api.AwattarApi._AwattarApi__schedule_price_change_reaction")
+    def test_process_price_changes(self, mock_schedule_reaction):
+        hardware = Mock()
+        api = AwattarApi(hardware)
+
+        data = [
+            {
+                "start_timestamp": 1671098400000,
+                "end_timestamp": 1671102000000,
+                "marketprice": 450.72,
+                "unit": "Eur/MWh"
+            },
+            {
+                "start_timestamp": 1671102000000,
+                "end_timestamp": 1671105600000,
+                "marketprice": 406.56,
+                "unit": "Eur/MWh"
+            },
+            {
+                "start_timestamp": 1671105600000,
+                "end_timestamp": 1671109200000,
+                "marketprice": 396.53,
+                "unit": "Eur/MWh"
+            }
+        ]
+
+        api._AwattarApi__process_price_changes(data)
+        assert mock_schedule_reaction.call_count == 3
+

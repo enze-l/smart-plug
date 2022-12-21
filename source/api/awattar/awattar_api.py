@@ -28,7 +28,7 @@ class AwattarApi:
         self.__set_is_running(True)
         while self.__get_is_running():
             self.__cancel_all_tasks()
-            self.__poll_api()
+            await self.__poll_api()
             twelve_hours_in_seconds = 12 * 60 * 60
             await uasyncio.sleep(twelve_hours_in_seconds)
 
@@ -39,14 +39,20 @@ class AwattarApi:
     def __set_button_behaviour(self):
         self.button.set_on_toggle_function(self.__execute_button_behaviour)
 
-    def __poll_api(self):
+    async def __poll_api(self, time_delay=0):
+        await uasyncio.sleep(time_delay)
         res = urequests.get(self.url)
-        data = res.json()["data"]
+        if res.status_code == 200:
+            self.__process_price_changes(res.json()["data"])
+        else:
+            uasyncio.create_task(self.__poll_api(3))
+
+    def __process_price_changes(self, data):
         for interval in data:
             start_time_sec_esp_utc = int(interval["start_timestamp"] / 1000 - utc_secs_till_2000)
-            self.__create_scheduled_task(start_time_sec_esp_utc, interval["marketprice"])
+            self.__schedule_price_change_reaction(start_time_sec_esp_utc, interval["marketprice"])
 
-    def __create_scheduled_task(self, start_timestamp, price):
+    def __schedule_price_change_reaction(self, start_timestamp, price):
         current_time = time.time()
         time_till_execution = start_timestamp - current_time
         task = uasyncio.create_task(
