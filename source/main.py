@@ -1,7 +1,6 @@
 from config.config import WIFI_SSID, WIFI_PASSWORD
 from networking.wifi_client import WifiClient
 from networking import ntp_time
-from api.awattar.awattar_api import AwattarApi
 from hardware import hardware
 from api.api_controller import APIController
 
@@ -13,8 +12,7 @@ def setup():
 
 
 def start_api():
-    polling_api = AwattarApi(hardware)
-    api_controller = APIController(polling_api)
+    api_controller = APIController(hardware)
     api_controller.start()
 
 

@@ -1,14 +1,14 @@
 import urequests
 import time
 import uasyncio
-from .awattar_config import TURN_ON_THRESHOLD_EUR
+from .config import TURN_ON_THRESHOLD_EUR
 
 # micropython measure time with seconds since th 1.1.2000
 # to convert this time to utc this variable serves as a reference
 utc_secs_till_2000 = 946684800
 
 
-class AwattarApi:
+class API:
     def __init__(self, hardware):
         self.relay = hardware.relay
         self.button = hardware.button_external

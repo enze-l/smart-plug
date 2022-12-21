@@ -1,9 +1,11 @@
 import uasyncio
+from config.config import API_NAME
 
 
 class APIController:
-    def __init__(self, api):
-        self.api = api
+    def __init__(self, hardware):
+        api = __import__("api." + API_NAME + ".api", globals(), locals(), [], 0)
+        self.api = api.API(hardware)
 
     def start(self):
         event_loop = uasyncio.get_event_loop()
