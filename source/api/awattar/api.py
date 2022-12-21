@@ -49,8 +49,12 @@ class API:
 
     def __process_price_changes(self, data):
         for interval in data:
-            start_time_sec_esp_utc = int(interval["start_timestamp"] / 1000 - utc_secs_till_2000)
-            self.__schedule_price_change_reaction(start_time_sec_esp_utc, interval["marketprice"])
+            start_time_sec_esp_utc = int(
+                interval["start_timestamp"] / 1000 - utc_secs_till_2000
+            )
+            self.__schedule_price_change_reaction(
+                start_time_sec_esp_utc, interval["marketprice"]
+            )
 
     def __schedule_price_change_reaction(self, start_timestamp, price):
         current_time = time.time()
