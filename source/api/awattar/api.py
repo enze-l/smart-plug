@@ -1,7 +1,7 @@
 import urequests
 import time
 import uasyncio
-from .config import *
+from .config import TURN_ON_THRESHOLD_EUR
 from ..abstract_api import AbstractAPI
 
 # micropython measure time with seconds since th 1.1.2000
