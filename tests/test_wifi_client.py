@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase
 from source.networking.wifi_client import WifiClient
 from unittest.mock import patch, Mock
 
@@ -7,7 +7,7 @@ sample_password = "sample_password"
 host_name = "Micro-Plug"
 
 
-class TestWifi(unittest.TestCase):
+class TestWifi(TestCase):
     @patch("source.networking.wifi_client.network.WLAN")
     def test_wifi_should_connect(self, wifi):
         wifi_client = WifiClient(sample_ssid, sample_password)
@@ -63,7 +63,3 @@ class TestWifi(unittest.TestCase):
         wifi_client.start()
 
         reset.assert_called_once()
-
-
-if __name__ == "__main__":
-    unittest.main()

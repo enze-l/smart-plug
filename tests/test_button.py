@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase
 from unittest.mock import Mock, patch
 from source.hardware.button import Button
 
@@ -10,7 +10,7 @@ off_value = False
 enough_time_passed_to_click = -200
 
 
-class TestButton(unittest.TestCase):
+class TestButton(TestCase):
     @patch("source.hardware.button.Pin")
     @patch("source.hardware.button.time")
     def test_click_should_trigger_function(self, mock_time, mock_pin):
