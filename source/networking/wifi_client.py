@@ -1,5 +1,6 @@
 import network
 import machine
+from ..utils.logger import log
 
 
 class WifiClient:
@@ -12,13 +13,13 @@ class WifiClient:
         try:
             if not self.wifi.isconnected():
                 self.try_connecting()
-            print("network config:", self.wifi.ifconfig())
+            log("network config:" + self.wifi.ifconfig())
         except OSError as error:
-            print(error)
+            log(error)
             machine.reset()
 
     def try_connecting(self):
-        print("connecting to network...")
+        log("connecting to network...")
         self.wifi.active(True)
         self.wifi.config(dhcp_hostname="Micro-Plug")
         self.wifi.connect(self.wifi_ssid, self.wifi_password)

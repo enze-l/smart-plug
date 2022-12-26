@@ -1,9 +1,11 @@
 import time
 from machine import Pin
+from utils.logger import log
 
 
 class Button:
-    def __init__(self, pin, is_inverted, debounce_delay_ms=50):
+    def __init__(self, name, pin, is_inverted, debounce_delay_ms=50):
+        self.name = name
         self.on_toggle_function = None
         self.on_release_function = None
         self.on_click_function = None
@@ -41,9 +43,12 @@ class Button:
     def __execute_function_and_reset_(self, time_of_click, current_button_state):
         if self.on_click_function and current_button_state:
             self.on_click_function()
+            log(self.name + " has been clicked")
         if self.on_release_function and not current_button_state:
             self.on_release_function()
+            log(self.name + " has been released")
         if self.on_toggle_function:
             self.on_toggle_function()
+            log(self.name + " has been clicked")
         self.last_click_time = time_of_click
         self.last_button_state = current_button_state

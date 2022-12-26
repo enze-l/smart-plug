@@ -9,3 +9,4 @@ def init_micropython_mock_modules():
     sys.modules["urequests"] = Mock()
     sys.modules["uasyncio"] = AsyncMock()
     sys.modules["micropython"] = Mock()
+    sys.modules["utils.logger"] = Mock()

@@ -8,13 +8,14 @@ input_pin = 0
 on_value = True
 off_value = False
 enough_time_passed_to_click = -200
+button_name = "test_button"
 
 
 class TestButton(TestCase):
     @patch("source.hardware.button.Pin")
     @patch("source.hardware.button.time")
     def test_click_should_trigger_function(self, mock_time, mock_pin):
-        button = Button(input_pin, is_not_inverted)
+        button = Button(button_name, input_pin, is_not_inverted)
         mock_pin().value = Mock(return_value=on_value)
         mock_time.ticks_diff = Mock(return_value=enough_time_passed_to_click)
 
@@ -28,7 +29,7 @@ class TestButton(TestCase):
     @patch("source.hardware.button.Pin")
     @patch("source.hardware.button.time")
     def test_release_should_trigger_function(self, mock_time, mock_pin):
-        button = Button(input_pin, is_not_inverted)
+        button = Button(button_name, input_pin, is_not_inverted)
         mock_pin().value = Mock(return_value=off_value)
         mock_time.ticks_diff = Mock(return_value=enough_time_passed_to_click)
 
@@ -42,7 +43,7 @@ class TestButton(TestCase):
     @patch("source.hardware.button.Pin")
     @patch("source.hardware.button.time")
     def test_click_should_trigger_toggle_function(self, mock_time, mock_pin):
-        button = Button(input_pin, is_not_inverted)
+        button = Button(button_name, input_pin, is_not_inverted)
         mock_pin().value = Mock(return_value=on_value)
         mock_time.ticks_diff = Mock(return_value=enough_time_passed_to_click)
 
@@ -58,7 +59,7 @@ class TestButton(TestCase):
     def test_click_and_release_should_trigger_toggle_function(
         self, mock_time, mock_pin
     ):
-        button = Button(input_pin, is_not_inverted)
+        button = Button(button_name, input_pin, is_not_inverted)
         mock_pin().value = Mock(side_effect=[on_value, off_value])
         mock_time.ticks_diff = Mock(return_value=enough_time_passed_to_click)
 
@@ -75,7 +76,7 @@ class TestButton(TestCase):
     def test_click_should_trigger_function_on_inverted_button(
         self, mock_time, mock_pin
     ):
-        button = Button(input_pin, is_inverted)
+        button = Button(button_name, input_pin, is_inverted)
         mock_pin().value = Mock(return_value=off_value)
         mock_time.ticks_diff = Mock(return_value=enough_time_passed_to_click)
 
@@ -91,7 +92,7 @@ class TestButton(TestCase):
     def test_click_should_not_trigger_function_not_enough_time_passed(
         self, mock_time, mock_pin
     ):
-        button = Button(input_pin, is_not_inverted)
+        button = Button(button_name, input_pin, is_not_inverted)
         mock_pin().value = Mock(return_value=on_value)
         not_enough_time_passed_to_click = 200
         mock_time.ticks_diff = Mock(return_value=not_enough_time_passed_to_click)
@@ -108,7 +109,7 @@ class TestButton(TestCase):
     def test_click_should_not_trigger_function_state_has_not_changed(
         self, mock_time, mock_pin
     ):
-        button = Button(input_pin, is_not_inverted)
+        button = Button(button_name, input_pin, is_not_inverted)
         mock_pin().value = Mock(return_value=off_value)
         mock_time.ticks_diff = Mock(return_value=enough_time_passed_to_click)
 

@@ -1,8 +1,9 @@
 import ntptime
 import time
+from ..utils.logger import log
 
 
 def adjust_own_time():
-    print("getting time ...")
+    log("getting time ...")
     ntptime.settime()
-    print("current utc time is " + str(time.localtime()))
+    log("current utc time is " + str(time.localtime()))
