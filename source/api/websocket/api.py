@@ -10,6 +10,8 @@ class API(AbstractAPI):
         self.connected = False
         self.socket = socket.socket()
         self.running = False
+        self.handle_message_task = None
+        self.connect_task = None
 
     def start(self):
         self.running = True
@@ -19,9 +21,11 @@ class API(AbstractAPI):
 
     async def __init_connection(self):
         while not self.connected:
-            await self.__connect()
+            self.connect_task = uasyncio.create_task(self.__connect())
+            await self.connect_task
         while self.connected:
-            self.__handle_message()
+            self.handle_message_task = uasyncio.create_task(self.__handle_message())
+            await self.handle_message_task
 
     async def __connect(self):
         try:
@@ -34,7 +38,7 @@ class API(AbstractAPI):
             self.socket.close()
             self.socket = socket.socket()
 
-    def __handle_message(self):
+    async def __handle_message(self):
         data = self.socket.recv(1024)
         message = str(data, "utf8")
         if len(message) == 0:
@@ -43,4 +47,10 @@ class API(AbstractAPI):
             print(message)
 
     def stop(self):
-        pass
+        self.running = False
+        self.connected = False
+        if self.handle_message_task:
+            self.handle_message_task.cancel()
+        if self.connect_task:
+            self.connect_task.cancel()
+        print("api stopped")
