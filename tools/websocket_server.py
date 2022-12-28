@@ -12,16 +12,22 @@ def connect():
             server_socket.listen()
             connection, address = server_socket.accept()
             connections.append(connection)
+            print(str(address) + " connected")
 
 
 def send():
+    number = 0
     while True:
+        time.sleep(1)
+        message = "Hello " + str(number)
+        print(message)
+        number += 1
         for connection in connections:
-            print("Connected")
-            while True:
-                time.sleep(1)
-                print("Hello")
-                connection.sendall(b"Hello\n")
+            try:
+                connection.sendall(message.encode("utf-8"))
+            except (BrokenPipeError, ConnectionResetError):
+                connections.remove(connection)
+                print("request timed out")
 
 
 start_new_thread(connect, ())
