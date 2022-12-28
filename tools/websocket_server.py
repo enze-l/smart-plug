@@ -3,8 +3,8 @@ import time
 import socket
 
 connections = []
-
 message = "turn_off"
+
 
 def connect():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:

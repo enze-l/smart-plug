@@ -6,7 +6,8 @@ from .api_config import SERVER_IP_ADDRESS, SERVER_PORT
 
 class API(AbstractAPI):
     def __init__(self, hardware):
-        self.hardware = hardware
+        self.relay = hardware.relay_with_led
+        self.button = hardware.button_external
         self.connected = False
         self.socket = socket.socket()
         self.running = False
@@ -15,11 +16,13 @@ class API(AbstractAPI):
 
     def start(self):
         self.running = True
+        self.__set_button_behaviour()
         while self.running:
             await self.__init_connection()
         self.socket.close()
 
     def stop(self):
+        self.button.reset_functions()
         self.running = False
         self.connected = False
         if self.handle_message_task:
@@ -27,6 +30,9 @@ class API(AbstractAPI):
         if self.connect_task:
             self.connect_task.cancel()
         print("api stopped")
+
+    def __set_button_behaviour(self):
+        self.button.set_on_toggle_function(self.relay.toggle)
 
     async def __init_connection(self):
         while not self.connected:
@@ -65,5 +71,4 @@ class API(AbstractAPI):
         elif message == "toggle":
             relay.toggle()
         else:
-            print("Message not recognized")
-
+            print("Command not recognized")
