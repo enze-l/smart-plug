@@ -4,6 +4,7 @@ import socket
 
 connections = []
 
+message = "turn_off"
 
 def connect():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
@@ -17,7 +18,6 @@ def connect():
 
 def send():
     while True:
-        message = "toggle"
         time.sleep(1)
         print(message)
         for connection in connections:

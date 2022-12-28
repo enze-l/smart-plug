@@ -57,13 +57,13 @@ class API(AbstractAPI):
 
     def __process_message(self, message):
         print(message)
-        led = self.hardware.led
+        relay = self.hardware.relay_with_led
         if message == "turn_on":
-            led.turn_on()
+            relay.turn_on()
         elif message == "turn_off":
-            led.turn_on()
+            relay.turn_off()
         elif message == "toggle":
-            led.toggle()
+            relay.toggle()
         else:
             print("Message not recognized")
 
