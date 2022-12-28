@@ -16,12 +16,10 @@ def connect():
 
 
 def send():
-    number = 0
     while True:
+        message = "toggle"
         time.sleep(1)
-        message = "Hello " + str(number)
         print(message)
-        number += 1
         for connection in connections:
             try:
                 connection.sendall(message.encode("utf-8"))
