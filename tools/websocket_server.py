@@ -2,7 +2,7 @@ from _thread import start_new_thread
 import time
 import socket
 
-connections = []
+clients = []
 message = "get_state"
 
 
@@ -12,19 +12,19 @@ def connect():
         while True:
             server_socket.listen()
             connection, address = server_socket.accept()
-            connections.append(connection)
+            clients.append((connection, address))
             print(str(address) + " connected")
-            start_new_thread(receive, (connection,))
+            start_new_thread(receive, ((connection, address),))
 
 
-def receive(connection):
-    while connection in connections:
-        data = connection.recv(1024)
+def receive(client):
+    while client in clients:
+        data = client[0].recv(1024)
         answer = str(data, "utf8")
         if answer != "":
-            print("This is an answer:" + answer)
+            print(str(client[1]) + " is " + answer)
         else:
-            close_connection(connection)
+            disconnect_client(client)
             print("connection timed out")
 
 
@@ -32,17 +32,17 @@ def send():
     while True:
         time.sleep(1)
         print(message)
-        for connection in connections:
+        for client in clients:
             try:
-                connection.sendall(message.encode("utf-8"))
+                client[0].sendall(message.encode("utf-8"))
             except (BrokenPipeError, ConnectionResetError):
-                close_connection(connection)
+                disconnect_client(client)
                 print("request timed out")
 
 
-def close_connection(connection):
-    connections.remove(connection)
-    connection.close()
+def disconnect_client(client):
+    clients.remove(client)
+    client[0].close()
 
 
 start_new_thread(connect, ())
