@@ -3,7 +3,7 @@ import time
 import socket
 
 connections = []
-message = "turn_off"
+message = "get_state"
 
 
 def connect():
@@ -14,6 +14,18 @@ def connect():
             connection, address = server_socket.accept()
             connections.append(connection)
             print(str(address) + " connected")
+            start_new_thread(receive, (connection,))
+
+
+def receive(connection):
+    while connection in connections:
+        data = connection.recv(1024)
+        answer = str(data, "utf8")
+        if answer != "":
+            print("This is an answer:" + answer)
+        else:
+            close_connection(connection)
+            print("connection timed out")
 
 
 def send():
@@ -24,8 +36,13 @@ def send():
             try:
                 connection.sendall(message.encode("utf-8"))
             except (BrokenPipeError, ConnectionResetError):
-                connections.remove(connection)
+                close_connection(connection)
                 print("request timed out")
+
+
+def close_connection(connection):
+    connections.remove(connection)
+    connection.close()
 
 
 start_new_thread(connect, ())

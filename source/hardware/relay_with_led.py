@@ -18,3 +18,6 @@ class RelayWithLed:
     def set_on_state(self, state):
         self.led.set_on_state(state)
         self.relay.set_on_state(state)
+
+    def get_on_state(self):
+        return self.relay.get_on_state()

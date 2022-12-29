@@ -63,12 +63,15 @@ class API(AbstractAPI):
 
     def __process_message(self, message):
         print(message)
-        relay = self.hardware.relay_with_led
         if message == "turn_on":
-            relay.turn_on()
+            self.relay.turn_on()
         elif message == "turn_off":
-            relay.turn_off()
+            self.relay.turn_off()
         elif message == "toggle":
-            relay.toggle()
+            self.relay.toggle()
+        elif message == "get_state":
+            answer = str(self.relay.get_on_state())
+            print("State of Gate " + str(answer))
+            self.socket.sendall(answer)
         else:
             print("Command not recognized")
