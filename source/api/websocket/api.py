@@ -70,8 +70,6 @@ class API(AbstractAPI):
         elif message == "toggle":
             self.relay.toggle()
         elif message == "get_state":
-            answer = str(self.relay.get_on_state())
-            print("State of Gate " + str(answer))
-            self.socket.sendall(answer)
+            self.socket.sendall(self.relay.get_on_state_string())
         else:
             print("Command not recognized")

@@ -21,3 +21,6 @@ class RelayWithLed:
 
     def get_on_state(self):
         return self.relay.get_on_state()
+
+    def get_on_state_string(self):
+        return self.relay.get_on_state_string()
