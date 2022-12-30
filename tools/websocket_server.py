@@ -1,7 +1,11 @@
 from _thread import start_new_thread
 import time
 import socket
-from websocket_config import WEBSOCKET_PORT, WEBSOCKET_MESSAGE_STRING, WEBSOCKET_COMMAND_INTERVALL_SECONDS
+from websocket_config import (
+    WEBSOCKET_PORT,
+    WEBSOCKET_MESSAGE_STRING,
+    WEBSOCKET_COMMAND_INTERVALL_SECONDS,
+)
 
 
 class WebsocketServer:
