@@ -155,6 +155,3 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
         api._API__process_message(bad_message)
 
         api.relay.assert_not_called()
-
-
-
