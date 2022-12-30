@@ -21,6 +21,7 @@ class API(AbstractAPI):
 
     async def start(self):
         self.__set_is_running(True)
+        self.__set_button_behaviour()
         while self.__get_is_running():
             self.__cancel_all_tasks()
             await self.__poll_api()
@@ -30,6 +31,7 @@ class API(AbstractAPI):
     def stop(self):
         self.__set_is_running(False)
         self.__cancel_all_tasks()
+        self.button.reset_functions()
 
     def __cancel_all_tasks(self):
         for task in self.tasks:

@@ -28,3 +28,10 @@ class BinaryOutput:
             return not self.pin.value()
         else:
             return self.pin.value()
+
+    def get_on_state_string(self):
+        state = self.get_on_state()
+        if state:
+            return "on"
+        else:
+            return "off"

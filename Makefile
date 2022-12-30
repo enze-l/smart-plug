@@ -14,3 +14,6 @@ silent-unit-test: development-dependencies
 	@pipenv run python3 -m unittest
 
 test: lint unit-test
+
+websocket-server: development-dependencies
+	@pipenv run python3 ./tools/websocket_server.py

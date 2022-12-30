@@ -23,6 +23,11 @@ class Button:
     def set_on_toggle_function(self, function):
         self.on_toggle_function = function
 
+    def reset_functions(self):
+        self.on_toggle_function = None
+        self.on_click_function = None
+        self.on_release_function = None
+
     def __debounce_input(self, irq):
         time_of_click = time.ticks_ms()
         current_button_state = self.pin.value()
