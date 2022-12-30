@@ -6,7 +6,7 @@ import warnings
 
 class TestAwattarAPI(IsolatedAsyncioTestCase):
     @patch("source.api.awattar.api.API._API__get_is_running")
-    async def test_API_should_start_and_stop(self, is_running):
+    async def test_api_should_start_and_stop(self, is_running):
         hardware = Mock()
 
         is_running.side_effect = [True, False]
@@ -22,7 +22,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_poll_request.assert_called_once()
         mock_cancel_tasks.assert_called_once()
 
-    def test_API_should_stop(self):
+    def test_api_should_stop(self):
         hardware = Mock()
         api = API(hardware)
 
