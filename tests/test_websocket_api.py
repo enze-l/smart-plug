@@ -91,3 +91,70 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
         mock_socket_module.socket.assert_called_once()
         assert not api.connected
 
+    @patch("source.api.websocket.api.API._API__process_message")
+    async def test_get_message(self, mock_process_message):
+        message_encoded = b"Hello"
+        message_decoded = "Hello"
+        hardware = Mock()
+        api = API(hardware)
+        api.socket = Mock()
+        api.socket.recv = Mock(return_value=message_encoded)
+
+        await api._API__get_message()
+
+        mock_process_message.assert_called_with(message_decoded)
+
+    @patch("source.api.websocket.api.API._API__process_message")
+    async def test_get_message_fails_broke_pipe(self, mock_process_message):
+        message_encoded = b""
+        hardware = Mock()
+        api = API(hardware)
+        api.socket = Mock()
+        api.socket.recv = Mock(return_value=message_encoded)
+
+        await api._API__get_message()
+
+        mock_process_message.assert_not_called()
+        assert not api.connected
+
+    def test_process_message_succeeds(self):
+        hardware = Mock()
+        api = API(hardware)
+        mock_relay = Mock()
+        api.relay = mock_relay
+
+        api._API__process_message("turn_on")
+        mock_relay.turn_on.assert_called_once()
+
+        api._API__process_message("turn_off")
+        mock_relay.turn_off.assert_called_once()
+
+        api._API__process_message("toggle")
+        mock_relay.toggle.assert_called_once()
+
+    def test_process_message_get_succeeds(self):
+        hardware = Mock()
+        api = API(hardware)
+        mock_relay = Mock()
+        api.relay = mock_relay
+        mock_socket = Mock()
+        api.socket = mock_socket
+
+        api._API__process_message("get_state")
+
+        mock_relay.get_on_state_string.assert_called_once()
+        mock_socket.sendall.assert_called_once()
+
+    def test_process_message_command_not_recognized(self):
+        hardware = Mock()
+        api = API(hardware)
+        mock_relay = Mock()
+        api.relay = mock_relay
+        bad_message = "bad message"
+
+        api._API__process_message(bad_message)
+
+        api.relay.assert_not_called()
+
+
+

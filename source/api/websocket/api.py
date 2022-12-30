@@ -53,9 +53,9 @@ class API(AbstractAPI):
         try:
             self.socket.connect((SERVER_IP_ADDRESS, SERVER_PORT))
             self.connected = True
-            print("connected")
+            print("connected to server")
         except OSError:
-            print("trying to connect again in 1 second ...")
+            print("trying to connect to server again in 1 second ...")
             await uasyncio.sleep(1)
             self.socket.close()
             self.socket = socket.socket()
