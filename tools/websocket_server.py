@@ -1,6 +1,7 @@
 from _thread import start_new_thread
 import time
 import socket
+from websocket_config import WEBSOCKET_PORT
 
 clients = []
 message = "get_state"
@@ -8,7 +9,7 @@ message = "get_state"
 
 def connect():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-        server_socket.bind(("0.0.0.0", 8080))
+        server_socket.bind(("0.0.0.0", WEBSOCKET_PORT))
         while True:
             server_socket.listen()
             connection, address = server_socket.accept()
