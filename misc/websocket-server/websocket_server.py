@@ -3,7 +3,7 @@ import time
 import socket
 from websocket_config import (
     WEBSOCKET_PORT,
-    WEBSOCKET_MESSAGE_STRING,
+    WEBSOCKET_CONCATENATED_COMMANDS,
     WEBSOCKET_COMMAND_INTERVALL_SECONDS,
 )
 
@@ -11,7 +11,7 @@ from websocket_config import (
 class WebsocketServer:
     def __init__(self):
         self.clients = []
-        self.all_messages = WEBSOCKET_MESSAGE_STRING
+        self.all_messages = WEBSOCKET_CONCATENATED_COMMANDS
         self.running = False
 
     def start(self):
