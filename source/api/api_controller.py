@@ -24,7 +24,7 @@ class APIController:
         while True:
             connection, address = server_socket.accept()
             request = connection.recv(1024)
-            print(address)
+            print(str(request))
             connection.sendall(self.html())
             connection.close()
             print("connection closed")
@@ -33,13 +33,20 @@ class APIController:
         return """
         <html>
           <head>
-            <title>Href Attribute Example</title>
+            <title>Smart-Plug</title>
+            <style>
+                html { text-align: center; }
+            </style>
           </head>
           <body>
-            <h1>Href Attribute Example</h1>
-            <p>
-              <a href="https://www.freecodecamp.org/contribute/">The freeCodeCamp Contribution Page</a> shows you how and where you can contribute to freeCodeCamp's community and growth.
-            </p>
+            <label for="api">Chose an api</label>
+            <form action="/set-api">
+                <select name="api" id="api">
+                    <option value="awattar">Awattar</option>
+                    <option value="websocket">Websocket</option>
+                </select>
+                <input type="submit" value="Submit">
+            </form>
           </body>
         </html>"""
 
