@@ -1,5 +1,4 @@
 BOARD_PORT ?= /dev/ttyUSB0
-START_SCRIPT ?= ./source/main.py
 MICROPYTHON_FIRMWARE_PATH ?= ./misc/firmware/firmware.bin
 
 development-dependencies:
@@ -20,10 +19,8 @@ deploy: development-dependencies
 	@pipenv run ampy --port $(BOARD_PORT) reset
 	@pipenv run rshell -p $(BOARD_PORT) rsync -m ./source /pyboard
 
-start: development-dependencies
-	@pipenv run ampy --port $(BOARD_PORT) run $(START_SCRIPT)
-
-deploy-start: deploy start
+run: development-dependencies
+	@pipenv run mpremote connect $(BOARD_PORT) mount ./source exec "import main"
 
 install-firmware: development-dependencies
 	@echo "GET BOARD INTO BOOT MODE OR THIS WILL FAIL!"
