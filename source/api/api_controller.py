@@ -27,15 +27,13 @@ class APIController:
         server_socket.listen()
         while True:
             connection, address = server_socket.accept()
-            request = connection.recv(1024)
-            print(str(request))
+            request = str(connection.recv(1024))
+            print(request.split(" "))
             connection.sendall(self.html())
             connection.close()
             print("connection closed")
 
     def html(self):
-        api_options = self.__get_api_option()
-
         return """
         <html>
           <head>
@@ -46,14 +44,14 @@ class APIController:
           </head>
           <body>
             <label for="api">Chose an api</label>
-            <form action="/set-api">
-                <select name="api" id="api">""" + api_options + """</select>
+            <form>
+                <select name="api" id="api">""" + self.__get_api_html_options() + """</select>
                 <input type="submit" value="Submit">
             </form>
           </body>
         </html>"""
 
-    def __get_api_option(self):
+    def __get_api_html_options(self):
         options = ["awattar", "websocket"]
         html_options = ""
         for option in options:
