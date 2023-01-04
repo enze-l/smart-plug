@@ -1,13 +1,17 @@
 import uasyncio
 import _thread
 import socket
-from config.config import API_NAME
 
 
 class APIController:
     def __init__(self, hardware):
-        api = __import__("api." + API_NAME + ".api", globals(), locals(), [], 0)
-        self.api = api.API(hardware)
+        self.hardware = hardware
+        self.current_api_name = "websocket"
+        self.__set_api(self.current_api_name)
+
+    def __set_api(self, api_name):
+        api = __import__("api." + api_name + ".api", globals(), locals(), [], 0)
+        self.api = api.API(self.hardware)
 
     def start(self):
         event_loop = uasyncio.get_event_loop()
@@ -30,6 +34,8 @@ class APIController:
             print("connection closed")
 
     def html(self):
+        api_options = self.__get_api_option()
+
         return """
         <html>
           <head>
@@ -41,14 +47,24 @@ class APIController:
           <body>
             <label for="api">Chose an api</label>
             <form action="/set-api">
-                <select name="api" id="api">
-                    <option value="awattar">Awattar</option>
-                    <option value="websocket">Websocket</option>
-                </select>
+                <select name="api" id="api">""" + api_options + """</select>
                 <input type="submit" value="Submit">
             </form>
           </body>
         </html>"""
+
+    def __get_api_option(self):
+        options = ["awattar", "websocket"]
+        html_options = ""
+        for option in options:
+            html_options = html_options + self.__get_api_html_name(option)
+        return html_options
+
+    def __get_api_html_name(self, name):
+        selected_placeholder = ""
+        if name == self.current_api_name:
+            selected_placeholder = """selected="selected" """
+        return "<option " + selected_placeholder + "value=\"" + name + "\">" + name + "</option>"
 
     def stop(self):
         self.api.stop()

@@ -3,6 +3,14 @@ import time
 
 
 def adjust_own_time():
-    print("getting time ...")
-    ntptime.settime()
-    print("current utc time is " + str(time.localtime()))
+    succeeded = False
+    while not succeeded:
+        try:
+            print("getting time ...")
+            ntptime.settime()
+            succeeded = True
+            print("current utc time is " + str(time.localtime()))
+        except OSError:
+            print("Failed to connect to network server. Trying again in 1 second ...")
+            time.sleep(1)
+
