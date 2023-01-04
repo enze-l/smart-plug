@@ -6,7 +6,7 @@ import socket
 class APIController:
     def __init__(self, hardware):
         self.hardware = hardware
-        self.current_api_name = "websocket"
+        self.current_api_name = "awattar"
         self.__set_api(self.current_api_name)
 
     def __set_api(self, api_name):
@@ -20,18 +20,35 @@ class APIController:
         event_loop.run_forever()
 
     def __serve_ui(self):
-        print("Hello before")
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_socket.bind(("0.0.0.0", 80))
-        server_socket.listen()
-        while True:
-            connection, address = server_socket.accept()
-            request = str(connection.recv(1024))
-            print(request.split(" "))
-            connection.sendall(self.html())
-            connection.close()
-            print("connection closed")
+        try:
+            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server_socket.bind(("0.0.0.0", 80))
+            server_socket.listen()
+            while True:
+                self.__accept_requests(server_socket)
+        except OSError:
+            print("something went wrong")
+            server_socket.close()
+
+    def __accept_requests(self, server_socket):
+        connection, address = server_socket.accept()
+        request = str(connection.recv(1024))
+        request_parameters = request.split(" ")
+        for parameter in request_parameters:
+            if parameter.startswith("/?api"):
+                self.__extract_and_set_api(parameter)
+        connection.sendall(self.html())
+        connection.close()
+        print("connection closed")
+
+    def __extract_and_set_api(self, api_arg_string):
+        api_name = api_arg_string.split("=")[1]
+        if api_name != self.current_api_name:
+            self.api.stop()
+            self.__set_api(api_name)
+            event_loop = uasyncio.get_event_loop()
+            event_loop.create_task(self.api.start())
 
     def html(self):
         return """

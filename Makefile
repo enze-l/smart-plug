@@ -20,10 +20,10 @@ deploy: development-dependencies
 	@pipenv run ampy --port $(BOARD_PORT) reset
 	@pipenv run rshell -p $(BOARD_PORT) rsync -m ./source /pyboard
 
-run: development-dependencies
+start: development-dependencies
 	@pipenv run ampy --port $(BOARD_PORT) run $(START_SCRIPT)
 
-deploy-run: deploy run
+deploy-start: deploy start
 
 install-firmware: development-dependencies
 	@echo "GET BOARD INTO BOOT MODE OR THIS WILL FAIL!"
