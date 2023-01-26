@@ -117,7 +117,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
             time_till_execution, price_at_time_of_execution
         )
         mock_uasyncio.create_task.assert_called_once()
-        assert len(api.tasks) == 1
+        assert len(api.threads) == 1
 
     @patch("source.api.awattar.api.API._API__process_price_changes")
     @patch("source.api.awattar.api.urequests")

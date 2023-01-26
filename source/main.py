@@ -1,3 +1,5 @@
+import time
+
 from config.config import WIFI_SSID, WIFI_PASSWORD
 from networking.wifi_client import WifiClient
 from networking import ntp_time
@@ -14,6 +16,10 @@ def setup():
 def start_api():
     api_controller = APIController(hardware)
     api_controller.start()
+
+    # only there to keep output going
+    while True:
+        time.sleep(60)
 
 
 setup()

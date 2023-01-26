@@ -1,3 +1,5 @@
+import _thread
+
 from config.config import API_NAME
 
 
@@ -7,7 +9,7 @@ class APIController:
         self.api = api.API(hardware)
 
     def start(self):
-        self.api.start()
+        _thread.start_new_thread(self.api.start, ())
 
     def stop(self):
         self.api.stop()

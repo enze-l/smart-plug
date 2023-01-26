@@ -19,7 +19,12 @@ class API(AbstractAPI):
         self.price_threshold_eur = TURN_ON_THRESHOLD_EUR
         self.automation_overriden = False
 
-    async def start(self):
+    def start(self):
+        event_loop = uasyncio.get_event_loop()
+        event_loop.create_task(self.__start_async_scheduling())
+        event_loop.run_forever()
+
+    async def __start_async_scheduling(self):
         self.__set_is_running(True)
         self.__set_button_behaviour()
         while self.__get_is_running():
