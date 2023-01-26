@@ -5,7 +5,7 @@ from .api_config import TURN_ON_THRESHOLD_EUR
 from ..abstract_api import AbstractAPI
 
 # micropython measure time with seconds since th 1.1.2000
-# to convert this time to utc this variable serves as a reference
+# to convert this time to utc this variable serves as a reference for the difference
 utc_secs_till_2000 = 946684800
 
 

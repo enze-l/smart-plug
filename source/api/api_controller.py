@@ -1,4 +1,3 @@
-import uasyncio
 from config.config import API_NAME
 
 
@@ -8,9 +7,7 @@ class APIController:
         self.api = api.API(hardware)
 
     def start(self):
-        event_loop = uasyncio.get_event_loop()
-        event_loop.create_task(self.api.start())
-        event_loop.run_forever()
+        self.api.start()
 
     def stop(self):
         self.api.stop()
