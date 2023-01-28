@@ -52,9 +52,9 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
         mock_set_is_running = Mock()
         api._API__set_is_running = mock_set_is_running
         mock_handle_message_task = Mock()
-        api.handle_message_task = mock_handle_message_task
+        api.handle_message_thread = mock_handle_message_task
         mock_handel_connect_task = Mock()
-        api.handle_connect_task = mock_handel_connect_task
+        api.handle_connect_thread = mock_handel_connect_task
         mock_button = Mock()
         api.button = mock_button
 
