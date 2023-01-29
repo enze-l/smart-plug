@@ -15,7 +15,7 @@ unit-test: development-dependencies
 
 test: lint unit-test
 
-deploy: reset
+deploy: development-dependencies
 	@pipenv run ampy --port $(BOARD_PORT) reset
 	@pipenv run rshell -p $(BOARD_PORT) rsync -m ./source /pyboard
 
