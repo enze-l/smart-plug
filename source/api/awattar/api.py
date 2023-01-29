@@ -1,11 +1,11 @@
 import urequests
 import time
 import uasyncio
-from .api_config import TURN_ON_THRESHOLD_EUR
+from .api_config import TURN_ON_THRESHOLD_EUR, API_PROVIDER_URL
 from ..abstract_api import AbstractAPI
 
 # micropython measure time with seconds since th 1.1.2000
-# to convert this time to utc this variable serves as a reference
+# to convert this time to utc this variable serves as a reference for the difference
 utc_secs_till_2000 = 946684800
 
 
@@ -13,20 +13,25 @@ class API(AbstractAPI):
     def __init__(self, hardware):
         self.relay = hardware.relay
         self.button = hardware.button_external
-        self.url = "https://api.awattar.de/v1/marketdata"
+        self.url = API_PROVIDER_URL
         self.is_running = False
         self.tasks = []
         self.price_threshold_eur = TURN_ON_THRESHOLD_EUR
         self.automation_overriden = False
 
-    async def start(self):
+    def start(self):
+        event_loop = uasyncio.get_event_loop()
+        event_loop.create_task(self.__start_async_scheduling())
+        event_loop.run_forever()
+
+    async def __start_async_scheduling(self):
         self.__set_is_running(True)
         self.__set_button_behaviour()
         while self.__get_is_running():
             self.__cancel_all_tasks()
             await self.__poll_api()
-            twelve_hours_in_seconds = 12 * 60 * 60
-            await uasyncio.sleep(twelve_hours_in_seconds)
+            nine_hours_in_seconds = 9 * 60 * 60
+            await uasyncio.sleep(nine_hours_in_seconds)
 
     def stop(self):
         self.__set_is_running(False)

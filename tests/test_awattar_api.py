@@ -17,7 +17,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_cancel_tasks = Mock()
         api._API__cancel_all_tasks = mock_cancel_tasks
 
-        await api.start()
+        await api._API__start_async_scheduling()
 
         mock_poll_request.assert_called_once()
         mock_cancel_tasks.assert_called_once()
