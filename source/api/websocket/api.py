@@ -2,7 +2,11 @@ import socket
 import time
 import _thread
 from ..abstract_api import AbstractAPI
-from .api_config import SERVER_IP_ADDRESS, SERVER_PORT, SERVER_CONNECTION_RETRY_TIME_SECONDS
+from .api_config import (
+    SERVER_IP_ADDRESS,
+    SERVER_PORT,
+    SERVER_CONNECTION_RETRY_TIME_SECONDS,
+)
 
 
 class API(AbstractAPI):
@@ -11,6 +15,7 @@ class API(AbstractAPI):
         self.relay = hardware.relay_with_led
         self.button = hardware.button_external
         self.socket = None
+        self.is_connected = False
 
     def start(self):
         self.__set_button_behaviour()
@@ -22,6 +27,9 @@ class API(AbstractAPI):
         self.socket.close()
         print("api stopped")
 
+    def get_is_connected(self):
+        return self.is_connected
+
     def __set_button_behaviour(self):
         self.button.set_on_toggle_function(self.relay.toggle)
 
@@ -32,11 +40,11 @@ class API(AbstractAPI):
             self.__get_message()
 
     def __connect(self):
-        is_connected = False
-        while not is_connected:
+        print("Started")
+        while not self.get_is_connected():
             try:
                 self.socket.connect((SERVER_IP_ADDRESS, SERVER_PORT))
-                is_connected = True
+                self.is_connected = True
                 print("connected to server")
             except OSError:
                 print("trying to connect to server again in 1 second ...")
@@ -45,12 +53,11 @@ class API(AbstractAPI):
                 self.socket = socket.socket()
 
     def __get_message(self):
-        is_connected = True
-        while is_connected:
+        while self.get_is_connected():
             data = self.socket.recv(1024)
             message = str(data, "utf8")
             if len(message) == 0:
-                is_connected = False
+                self.is_connected = False
             else:
                 self.__process_message(message)
 
