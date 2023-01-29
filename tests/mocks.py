@@ -7,5 +7,6 @@ def init_micropython_mock_modules():
     sys.modules["machine"] = Mock()
     sys.modules["time"] = Mock()
     sys.modules["urequests"] = Mock()
+    sys.modules["_thread"] = Mock()
     sys.modules["uasyncio"] = AsyncMock()
     sys.modules["micropython"] = Mock()

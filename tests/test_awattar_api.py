@@ -17,7 +17,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_cancel_tasks = Mock()
         api._API__cancel_all_tasks = mock_cancel_tasks
 
-        await api.start()
+        await api._API__start_async_scheduling()
 
         mock_poll_request.assert_called_once()
         mock_cancel_tasks.assert_called_once()
@@ -117,7 +117,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
             time_till_execution, price_at_time_of_execution
         )
         mock_uasyncio.create_task.assert_called_once()
-        assert len(api.threads) == 1
+        assert len(api.tasks) == 1
 
     @patch("source.api.awattar.api.API._API__process_price_changes")
     @patch("source.api.awattar.api.urequests")
