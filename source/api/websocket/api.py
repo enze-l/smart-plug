@@ -1,7 +1,7 @@
 import socket
 import uasyncio
 from ..abstract_api import AbstractAPI
-from .api_config import SERVER_IP_ADDRESS, SERVER_PORT
+from .api_config import SERVER_IP_ADDRESS, SERVER_PORT, SERVER_CONNECTION_RETRY_TIME_SECONDS
 
 
 class API(AbstractAPI):
@@ -55,8 +55,13 @@ class API(AbstractAPI):
             self.connected = True
             print("connected to server")
         except OSError:
-            print("trying to connect to server again in 1 second ...")
-            await uasyncio.sleep(1)
+            retry_time_string = str(SERVER_CONNECTION_RETRY_TIME_SECONDS)
+            print(
+                "trying to connect to server again in "
+                + retry_time_string
+                + " second ..."
+            )
+            await uasyncio.sleep(SERVER_CONNECTION_RETRY_TIME_SECONDS)
             self.socket.close()
             self.socket = socket.socket()
 
