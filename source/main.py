@@ -15,14 +15,14 @@ def setup():
 async def run_api():
     api_controller = APIController(hardware)
     uasyncio.create_task(api_controller.start_api())
-    print("API started")
     while True:
-        await uasyncio.sleep(10)
-        print("should change api to awattar")
-        uasyncio.create_task(api_controller.change_api("awattar"))
-        await uasyncio.sleep(10)
-        print("should chang api to websocket")
-        uasyncio.create_task(api_controller.change_api("websocket"))
+        await run_api_for_ten_seconds(api_controller, "awattar")
+        await run_api_for_ten_seconds(api_controller, "websocket")
+
+
+async def run_api_for_ten_seconds(api_controller, api_name):
+    await uasyncio.sleep(10)
+    uasyncio.create_task(api_controller.change_api(api_name))
 
 
 setup()

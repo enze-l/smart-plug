@@ -36,6 +36,7 @@ class API(AbstractAPI):
     def __cancel_all_tasks(self):
         for task in self.tasks:
             task.cancel()
+        self.tasks.clear()
 
     def __get_is_running(self):
         return self.is_running
