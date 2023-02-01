@@ -1,7 +1,11 @@
 import socket
 import uasyncio
 from ..abstract_api import AbstractAPI
-from .api_config import SERVER_IP_ADDRESS, SERVER_PORT, SERVER_CONNECTION_RETRY_TIME_SECONDS
+from .api_config import (
+    SERVER_IP_ADDRESS,
+    SERVER_PORT,
+    SERVER_CONNECTION_RETRY_TIME_SECONDS,
+)
 
 
 class API(AbstractAPI):

@@ -1,3 +1,4 @@
+import gc
 from config.config import API_NAME
 
 
@@ -17,8 +18,9 @@ class APIController:
             print("api loaded from cash")
             self.api = self.api_cash_dict[api_name]
         else:
-            print("api loaded from disk")
+            print("api loaded from memory")
             self.__import_api(api_name)
+        gc.collect()
 
     async def start_api(self):
         await self.api.start()
@@ -30,6 +32,3 @@ class APIController:
         self.stop_api()
         self.__load_api(api_name)
         await self.start_api()
-
-
-

@@ -1,3 +1,4 @@
+import gc
 import urequests
 import time
 import uasyncio
@@ -37,6 +38,7 @@ class API(AbstractAPI):
         for task in self.tasks:
             task.cancel()
         self.tasks.clear()
+        gc.collect()
 
     def __get_is_running(self):
         return self.is_running
