@@ -12,14 +12,6 @@ def setup():
     ntp_time.adjust_own_time()
 
 
-async def run_api():
-    api_controller = APIController(hardware)
-    uasyncio.create_task(api_controller.start_api())
-    while True:
-        await run_api_for_ten_seconds(api_controller, "awattar")
-        await run_api_for_ten_seconds(api_controller, "websocket")
-
-
 async def run_api_for_ten_seconds(api_controller, api_name):
     await uasyncio.sleep(10)
     uasyncio.create_task(api_controller.change_api(api_name))
@@ -27,5 +19,7 @@ async def run_api_for_ten_seconds(api_controller, api_name):
 
 setup()
 event_loop = uasyncio.get_event_loop()
-event_loop.create_task(run_api())
+api_controller = APIController(hardware)
+event_loop.create_task(api_controller.start_api())
+event_loop.create_task(api_controller.serve_ui())
 event_loop.run_forever()
