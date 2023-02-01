@@ -9,6 +9,9 @@ from .api_config import (
 
 
 class API(AbstractAPI):
+    def get_html_options(self):
+        return "<p>websocket API loaded</p>"
+
     def __init__(self, hardware):
         self.relay = hardware.relay_with_led
         self.button = hardware.button_external

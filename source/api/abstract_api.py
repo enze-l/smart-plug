@@ -13,3 +13,7 @@ class AbstractAPI(ABC):
     @abstractmethod
     def stop(self):
         pass
+
+    @abstractmethod
+    def get_html_options(self):
+        pass

@@ -11,6 +11,15 @@ utc_secs_till_2000 = 946684800
 
 
 class API(AbstractAPI):
+    def get_html_options(self):
+        return """
+        <form method="post">
+            <input name="toggle_threshold" class="form-control" type="number" required value={}>
+            <input type="submit" value="Set price Euro/MWh">
+        </form>""".format(
+            self.price_threshold_eur
+        )
+
     def __init__(self, hardware):
         self.relay = hardware.relay
         self.button = hardware.button_external

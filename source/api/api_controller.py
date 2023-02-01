@@ -77,21 +77,24 @@ class APIController:
 
     def html(self):
         return """
-        <html>
-          <head>
-            <title>Smart-Plug</title>
-            <style>
-                html { text-align: center; }
-            </style>
-          </head>
-          <body>
-            <label for="api">Chose an api</label>
-            <form>
-                <select name="api" id="api">""" + self.__get_api_html_options() + """</select>
-                <input type="submit" value="Submit">
-            </form>
-          </body>
-        </html>"""
+            <html>
+              <head>
+                <title>Smart-Plug</title>
+                <style>
+                    html {{ text-align: center; }}
+                </style>
+              </head>
+              <body>
+                <label for="api">Chose an api</label>
+                <form>
+                    <select name="api" id="api">{0}</select>
+                    <input type="submit" value="Set API">
+                </form>
+                {1}
+              </body>
+            </html>""".format(
+            self.__get_api_html_options(), self.api.get_html_options()
+        )
 
     def __get_api_html_options(self):
         options = ["awattar", "websocket"]
@@ -104,5 +107,12 @@ class APIController:
         selected_placeholder = ""
         if name == self.current_api_name:
             selected_placeholder = """selected="selected" """
-        return "<option " + selected_placeholder + "value=\"" + name + "\">" + name + "</option>"
-
+        return (
+            "<option "
+            + selected_placeholder
+            + 'value="'
+            + name
+            + '">'
+            + name
+            + "</option>"
+        )
