@@ -41,34 +41,27 @@ class APIController:
     async def serve_ui(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setblocking(False)
-        try:
-            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_socket.bind(("0.0.0.0", 80))
-            server_socket.listen()
-            while True:
-                try:
-                    self.__accept_requests(server_socket)
-                except OSError as e:
-                    pass
-                await uasyncio.sleep(0)
-        except OSError as e:
-            print("something went wrong")
-            print(e)
-            server_socket.close()
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_socket.bind(("0.0.0.0", 80))
+        server_socket.listen()
+        while True:
+            try:
+                self.__accept_requests(server_socket)
+            except OSError:
+                pass
+            await uasyncio.sleep(0)
 
     def __accept_requests(self, server_socket):
         connection, address = server_socket.accept()
         request = str(connection.recv(1024))
-        request_parameters = request.split(" ")
-        for parameter in request_parameters:
-            if parameter.startswith("/?api"):
-                self.__extract_and_set_api(parameter)
+        api_name_substring = request.split("api=")
+        if len(api_name_substring) > 1:
+            self.__set_api(api_name_substring[1].replace("'", ""))
         connection.sendall(self.html())
         connection.close()
         print("request processed")
 
-    def __extract_and_set_api(self, api_arg_string):
-        api_name = api_arg_string.split("=")[1]
+    def __set_api(self, api_name):
         if api_name != self.current_api_name:
             self.api.stop()
             self.__load_api(api_name)
@@ -86,7 +79,7 @@ class APIController:
               </head>
               <body>
                 <label for="api">Chose an api</label>
-                <form>
+                <form method="post">
                     <select name="api" id="api">{0}</select>
                     <input type="submit" value="Set API">
                 </form>

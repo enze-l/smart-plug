@@ -1,8 +1,10 @@
 import gc
+import socket
+
 import urequests
 import time
 import uasyncio
-from .api_config import TURN_ON_THRESHOLD_EUR, API_PROVIDER_URL
+from .api_config import TURN_ON_THRESHOLD_EUR, API_PROVIDER_URL, UI_INTERFACE_PORT
 from ..abstract_api import AbstractAPI
 
 # micropython measure time with seconds since th 1.1.2000
@@ -13,11 +15,12 @@ utc_secs_till_2000 = 946684800
 class API(AbstractAPI):
     def get_html_options(self):
         return """
-        <form method="post">
+        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+        <form method="post" action="http://192.168.0.15:{}" target="dummyframe">
             <input name="toggle_threshold" class="form-control" type="number" required value={}>
             <input type="submit" value="Set price Euro/MWh">
         </form>""".format(
-            self.price_threshold_eur
+            UI_INTERFACE_PORT, self.price_threshold_eur
         )
 
     def __init__(self, hardware):
@@ -32,11 +35,32 @@ class API(AbstractAPI):
     async def start(self):
         self.__set_is_running(True)
         self.__set_button_behaviour()
+        event_loop = uasyncio.get_event_loop()
+        event_loop.create_task(self.__poll_interface_port())
         while self.__get_is_running():
             self.__cancel_all_tasks()
             await self.__poll_api()
             nine_hours_in_seconds = 9 * 60 * 60
             await uasyncio.sleep(nine_hours_in_seconds)
+
+    async def __poll_interface_port(self):
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.setblocking(False)
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_socket.bind(("0.0.0.0", UI_INTERFACE_PORT))
+        server_socket.listen()
+        while self.__get_is_running():
+            try:
+                self.__accept_requests(server_socket)
+            except OSError:
+                pass
+            await uasyncio.sleep(0)
+
+    #todo
+    def __accept_requests(self, server_socket):
+        connection, address = server_socket.accept()
+        request = str(connection.recv(1024))
+        print(request)
 
     def stop(self):
         self.__set_is_running(False)
