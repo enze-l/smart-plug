@@ -28,7 +28,7 @@ class Button:
         self.on_click_function = None
         self.on_release_function = None
 
-    def __debounce_input(self, irq):
+    def __debounce_input(self):
         time_of_click = time.ticks_ms()
         current_button_state = self.pin.value()
         if self.is_inverted:
