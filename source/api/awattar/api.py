@@ -1,3 +1,4 @@
+import gc
 import urequests
 import time
 import uasyncio
@@ -5,7 +6,7 @@ from .api_config import TURN_ON_THRESHOLD_EUR, API_PROVIDER_URL
 from ..abstract_api import AbstractAPI
 
 # micropython measure time with seconds since th 1.1.2000
-# to convert this time to utc this variable serves as a reference for the difference
+# to convert this time to utc this variable serves as a reference
 utc_secs_till_2000 = 946684800
 
 
@@ -19,12 +20,7 @@ class API(AbstractAPI):
         self.price_threshold_eur = TURN_ON_THRESHOLD_EUR
         self.automation_overriden = False
 
-    def start(self):
-        event_loop = uasyncio.get_event_loop()
-        event_loop.create_task(self.__start_async_scheduling())
-        event_loop.run_forever()
-
-    async def __start_async_scheduling(self):
+    async def start(self):
         self.__set_is_running(True)
         self.__set_button_behaviour()
         while self.__get_is_running():
@@ -41,6 +37,8 @@ class API(AbstractAPI):
     def __cancel_all_tasks(self):
         for task in self.tasks:
             task.cancel()
+        self.tasks.clear()
+        gc.collect()
 
     def __get_is_running(self):
         return self.is_running

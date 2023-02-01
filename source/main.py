@@ -1,5 +1,4 @@
-import time
-
+import uasyncio
 from config.config import WIFI_SSID, WIFI_PASSWORD
 from networking.wifi_client import WifiClient
 from networking import ntp_time
@@ -13,14 +12,20 @@ def setup():
     ntp_time.adjust_own_time()
 
 
-def start_api():
+async def run_api():
     api_controller = APIController(hardware)
-    api_controller.start()
-
-    # only there to keep output going
+    uasyncio.create_task(api_controller.start_api())
     while True:
-        time.sleep(60)
+        await run_api_for_ten_seconds(api_controller, "awattar")
+        await run_api_for_ten_seconds(api_controller, "websocket")
+
+
+async def run_api_for_ten_seconds(api_controller, api_name):
+    await uasyncio.sleep(10)
+    uasyncio.create_task(api_controller.change_api(api_name))
 
 
 setup()
-start_api()
+event_loop = uasyncio.get_event_loop()
+event_loop.create_task(run_api())
+event_loop.run_forever()
