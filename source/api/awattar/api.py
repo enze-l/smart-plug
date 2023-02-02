@@ -1,6 +1,5 @@
 import gc
 import socket
-
 import urequests
 import time
 import uasyncio
@@ -17,14 +16,14 @@ class API(AbstractAPI):
         return """
         <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
         <form method="post" action="http://192.168.0.15:{}" target="dummyframe">
-            <input name="toggle_threshold" class="form-control" type="number" required value={}>
+            <input name="toggle_threshold" type="number" required value={}>
             <input type="submit" value="Set price Euro/MWh">
         </form>""".format(
             UI_INTERFACE_PORT, self.price_threshold_eur
         )
 
     def __init__(self, hardware):
-        self.relay = hardware.relay
+        self.relay = hardware.relay_with_led
         self.button = hardware.button_external
         self.url = API_PROVIDER_URL
         self.is_running = False
@@ -56,11 +55,16 @@ class API(AbstractAPI):
                 pass
             await uasyncio.sleep(0)
 
-    #todo
     def __accept_requests(self, server_socket):
         connection, address = server_socket.accept()
         request = str(connection.recv(1024))
-        print(request)
+        threshold_substring = request.split("toggle_threshold=")
+        if len(threshold_substring) > 1:
+            price_threshold_string = threshold_substring[1].replace("'", "")
+            self.price_threshold_eur = int(price_threshold_string)
+            print("Threshold set to " + price_threshold_string)
+            self.__cancel_all_tasks()
+            uasyncio.create_task(self.__poll_api())
 
     def stop(self):
         self.__set_is_running(False)

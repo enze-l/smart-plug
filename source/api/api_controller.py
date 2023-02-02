@@ -59,7 +59,7 @@ class APIController:
             self.__set_api(api_name_substring[1].replace("'", ""))
         connection.sendall(self.html())
         connection.close()
-        print("request processed")
+        print("Webpage requested")
 
     def __set_api(self, api_name):
         if api_name != self.current_api_name:
@@ -74,19 +74,32 @@ class APIController:
               <head>
                 <title>Smart-Plug</title>
                 <style>
-                    html {{ text-align: center; }}
+                    .container {{
+                        margin-left: auto;
+                        margin-right: auto;
+                        width: 24em;
+                        display: flex;
+                    }}
+                    input, select {{
+                        width: 12em;
+                    }}
                 </style>
               </head>
               <body>
-                <label for="api">Chose an api</label>
-                <form method="post">
-                    <select name="api" id="api">{0}</select>
-                    <input type="submit" value="Set API">
-                </form>
-                {1}
+                <div class="container">
+                    <h>API Selection<h/>
+                    <form method="post">
+                        <select name="api" id="api">{}</select>
+                        <input type="submit" value="Set API">
+                    </form>
+                    <h>{} Settings<h>
+                    {}
+                <div/>
               </body>
             </html>""".format(
-            self.__get_api_html_options(), self.api.get_html_options()
+            self.__get_api_html_options(),
+            self.current_api_name,
+            self.api.get_html_options(),
         )
 
     def __get_api_html_options(self):
