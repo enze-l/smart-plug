@@ -1,6 +1,6 @@
 import network
 import machine
-
+from config.config import SMART_PLUG_NAME
 
 class WifiClient:
     def __init__(self, wifi_ssid, wifi_password):
@@ -20,7 +20,7 @@ class WifiClient:
     def try_connecting(self):
         print("connecting to network...")
         self.wifi.active(True)
-        self.wifi.config(dhcp_hostname="Micro-Plug")
+        self.wifi.config(dhcp_hostname=SMART_PLUG_NAME)
         self.wifi.connect(self.wifi_ssid, self.wifi_password)
         while not self.wifi.isconnected():
             pass
