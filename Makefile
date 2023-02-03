@@ -5,7 +5,7 @@ development-dependencies:
 	@pipenv sync --dev
 
 lint: development-dependencies
-	@pipenv run flake8
+	@pipenv run flake8 --ignore=E402
 
 fix-lint: development-dependencies
 	@pipenv run black .

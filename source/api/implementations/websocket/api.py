@@ -101,9 +101,9 @@ class API(AbstractAPI):
         except OSError:
             self.socket.close()
             print(
-                "trying to connect to server again in "
-                + str(SERVER_CONNECTION_RETRY_TIME_SECONDS)
-                + " second ..."
+                """trying to connect to server again in {} second ...""".format(
+                    int(SERVER_CONNECTION_RETRY_TIME_SECONDS)
+                )
             )
             await uasyncio.sleep(SERVER_CONNECTION_RETRY_TIME_SECONDS)
 

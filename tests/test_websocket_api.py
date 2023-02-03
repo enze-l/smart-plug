@@ -1,10 +1,12 @@
+import sys
+sys.path.append("source")  # noqa: E402
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock, patch
-from source.api.websocket.api import API
+from source.api.implementations.websocket.api import API
 
 
 class TestWebsocketAPI(IsolatedAsyncioTestCase):
-    @patch("source.api.websocket.api.API._API__set_button_behaviour")
+    @patch("source.api.implementations.websocket.api.API._API__set_button_behaviour")
     async def test_start_api(self, mock_button_behaviour):
         hardware = Mock()
         api = API(hardware)
@@ -25,7 +27,7 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
         mock_set_running.assert_called_once()
         assert mock_get_is_running.call_count == 2
 
-    @patch("source.api.websocket.api.API._API__set_button_behaviour")
+    @patch("source.api.implementations.websocket.api.API._API__set_button_behaviour")
     async def test_api_runs_three_cycles(self, mock_button_behaviour):
         hardware = Mock()
         api = API(hardware)
@@ -76,7 +78,7 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
         mock_socket.connect.assert_called_once()
         assert api.connected
 
-    @patch("source.api.websocket.api.socket")
+    @patch("source.api.implementations.websocket.api.socket")
     async def test_connect_fails(self, mock_socket_module):
         hardware = Mock()
         api = API(hardware)
@@ -91,7 +93,7 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
         mock_socket_module.socket.assert_called_once()
         assert not api.connected
 
-    @patch("source.api.websocket.api.API._API__process_message")
+    @patch("source.api.implementations.websocket.api.API._API__process_message")
     async def test_get_message(self, mock_process_message):
         message_encoded = b"Hello"
         message_decoded = "Hello"
@@ -104,7 +106,7 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
 
         mock_process_message.assert_called_with(message_decoded)
 
-    @patch("source.api.websocket.api.API._API__process_message")
+    @patch("source.api.implementations.websocket.api.API._API__process_message")
     async def test_get_message_fails_broke_pipe(self, mock_process_message):
         message_encoded = b""
         hardware = Mock()

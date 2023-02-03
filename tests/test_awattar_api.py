@@ -1,11 +1,13 @@
+import sys
+sys.path.append("source")  # noqa: E402
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import Mock, AsyncMock, patch, call
-from source.api.awattar.api import API
+from source.api.implementations.awattar.api import API
 import warnings
 
 
 class TestAwattarAPI(IsolatedAsyncioTestCase):
-    @patch("source.api.awattar.api.API._API__get_is_running")
+    @patch("source.api.implementations.awattar.api.API._API__get_is_running")
     async def test_api_should_start_and_stop(self, is_running):
         warnings.simplefilter("ignore", RuntimeWarning)
         hardware = Mock()
@@ -95,9 +97,9 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         mock_relay_toggle_function.assert_called_once_with(True)
 
-    @patch("source.api.awattar.api.API._API__react_to_price_change")
-    @patch("source.api.awattar.api.uasyncio")
-    @patch("source.api.awattar.api.time")
+    @patch("source.api.implementations.awattar.api.API._API__react_to_price_change")
+    @patch("source.api.implementations.awattar.api.uasyncio")
+    @patch("source.api.implementations.awattar.api.time")
     def test_create_scheduled_price_change_reaction(
         self, mock_time, mock_uasyncio, mock_react_to_price_change
     ):
@@ -120,9 +122,9 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_uasyncio.create_task.assert_called_once()
         assert len(api.tasks) == 1
 
-    @patch("source.api.awattar.api.API._API__process_price_changes")
-    @patch("source.api.awattar.api.urequests")
-    @patch("source.api.awattar.api.uasyncio")
+    @patch("source.api.implementations.awattar.api.API._API__process_price_changes")
+    @patch("source.api.implementations.awattar.api.urequests")
+    @patch("source.api.implementations.awattar.api.uasyncio")
     async def test_poll_api_succeeds(
         self, mock_uasyncio, mock_urequest, mock_process_changes
     ):
@@ -136,9 +138,9 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_process_changes.assert_called_once()
         mock_uasyncio.create_task.assert_not_called()
 
-    @patch("source.api.awattar.api.API._API__process_price_changes")
-    @patch("source.api.awattar.api.urequests")
-    @patch("source.api.awattar.api.uasyncio")
+    @patch("source.api.implementations.awattar.api.API._API__process_price_changes")
+    @patch("source.api.implementations.awattar.api.urequests")
+    @patch("source.api.implementations.awattar.api.uasyncio")
     async def test_poll_api_fails(
         self, mock_uasyncio, mock_urequest, mock_process_changes
     ):
@@ -152,7 +154,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_process_changes.assert_not_called()
         mock_uasyncio.create_task.assert_called_once()
 
-    @patch("source.api.awattar.api.API._API__schedule_price_change_reaction")
+    @patch("source.api.implementations.awattar.api.API._API__schedule_price_change_reaction")
     def test_process_price_changes(self, mock_schedule_reaction):
         hardware = Mock()
         api = API(hardware)

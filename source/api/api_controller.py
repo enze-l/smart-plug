@@ -119,12 +119,6 @@ class APIController:
         selected_placeholder = ""
         if name == self.current_api_name:
             selected_placeholder = """selected="selected" """
-        return (
-            "<option "
-            + selected_placeholder
-            + 'value="'
-            + name
-            + '">'
-            + name
-            + "</option>"
+        return """<option {} value="{}">{}</option>""".format(
+            selected_placeholder, name, name
         )
