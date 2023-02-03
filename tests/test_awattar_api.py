@@ -7,6 +7,7 @@ import warnings
 class TestAwattarAPI(IsolatedAsyncioTestCase):
     @patch("source.api.awattar.api.API._API__get_is_running")
     async def test_api_should_start_and_stop(self, is_running):
+        warnings.simplefilter("ignore", RuntimeWarning)
         hardware = Mock()
 
         is_running.side_effect = [True, False]

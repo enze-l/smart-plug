@@ -1,14 +1,15 @@
 import gc
+import os
 import uasyncio
 import socket
-from config.config import API_NAME
+from config.config import CURRENT_API
 
 
 class APIController:
     def __init__(self, hardware):
         self.hardware = hardware
         self.api_cash_dict = {}
-        self.current_api_name = API_NAME
+        self.current_api_name = CURRENT_API
         self.api = None
         self.__load_api(self.current_api_name)
 
@@ -103,9 +104,12 @@ class APIController:
         )
 
     def __get_api_html_options(self):
-        options = ["awattar", "websocket"]
+        api_options = []
+        for file in os.ilistdir("/api/"):
+            if (file[1] == 0x4000) and (file[0] not in ("utils", "template_api")):
+                api_options.append(file[0])
         html_options = ""
-        for option in options:
+        for option in api_options:
             html_options = html_options + self.__get_api_html_name(option)
         return html_options
 

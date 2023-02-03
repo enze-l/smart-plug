@@ -2,6 +2,7 @@ import network
 import machine
 from config.config import SMART_PLUG_NAME
 
+
 class WifiClient:
     def __init__(self, wifi_ssid, wifi_password):
         self.wifi = network.WLAN(network.STA_IF)
