@@ -15,16 +15,17 @@ class API(AbstractAPI):
     def get_html_options(self):
         return """
         <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
-        <form method="post" action="http://192.168.0.15:{}" target="dummyframe">
+        <form method="post" action="http://{}:{}" target="dummyframe">
             <input name="toggle_threshold" type="number" required value={}>
             <input type="submit" value="Set price Euro/MWh">
         </form>""".format(
-            UI_INTERFACE_PORT, self.price_threshold_eur
+            self.ip_address, UI_INTERFACE_PORT, self.price_threshold_eur
         )
 
     def __init__(self, hardware):
         self.relay = hardware.relay_with_led
         self.button = hardware.button_external
+        self.ip_address = hardware.get_ip_address()
         self.url = API_PROVIDER_URL
         self.is_running = False
         self.tasks = []
@@ -34,8 +35,7 @@ class API(AbstractAPI):
     async def start(self):
         self.__set_is_running(True)
         self.__set_button_behaviour()
-        event_loop = uasyncio.get_event_loop()
-        event_loop.create_task(self.__poll_interface_port())
+        uasyncio.create_task(self.__poll_interface_port())
         while self.__get_is_running():
             self.__cancel_all_tasks()
             await self.__poll_api()
@@ -54,6 +54,7 @@ class API(AbstractAPI):
             except OSError:
                 pass
             await uasyncio.sleep(0)
+        server_socket.close()
 
     def __accept_requests(self, server_socket):
         connection, address = server_socket.accept()
