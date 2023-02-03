@@ -1,6 +1,6 @@
 import socket
 import uasyncio
-from ..abstract_api import AbstractAPI
+from api.abstract_api import AbstractAPI
 from .api_config import (
     SERVER_ADDRESS,
     SERVER_PORT,

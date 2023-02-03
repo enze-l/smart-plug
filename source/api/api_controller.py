@@ -14,7 +14,9 @@ class APIController:
         self.__load_api(self.current_api_name)
 
     def __import_api(self, api_name):
-        api = __import__("api." + api_name + ".api", globals(), locals(), [], 0)
+        api = __import__(
+            "api.implementations." + api_name + ".api", globals(), locals(), [], 0
+        )
         self.api = api.API(self.hardware)
         self.api_cash_dict[api_name] = self.api
 
@@ -105,8 +107,8 @@ class APIController:
 
     def __get_api_html_options(self):
         api_options = []
-        for file in os.ilistdir("/api/"):
-            if (file[1] == 0x4000) and (file[0] not in ("utils", "template_api")):
+        for file in os.ilistdir("/api/implementations/"):
+            if (file[1] == 0x4000) and (file[0] != "template_api"):
                 api_options.append(file[0])
         html_options = ""
         for option in api_options:

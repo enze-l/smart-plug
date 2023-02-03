@@ -4,7 +4,7 @@ import urequests
 import time
 import uasyncio
 from .api_config import TURN_ON_THRESHOLD_EUR, API_PROVIDER_URL, UI_INTERFACE_PORT
-from ..abstract_api import AbstractAPI
+from api.abstract_api import AbstractAPI
 
 # micropython measure time with seconds since th 1.1.2000
 # to convert this time to utc this variable serves as a reference

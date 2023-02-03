@@ -1,7 +1,10 @@
-from ..abstract_api import AbstractAPI
+from api.abstract_api import AbstractAPI
 
 
 class API(AbstractAPI):
+    def get_html_options(self):
+        pass
+
     def __init__(self, hardware):
         pass
 
