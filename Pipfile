@@ -9,7 +9,6 @@ black = "*"
 rshell = "*"
 esptool = "*"
 adafruit-ampy = "*"
-mpremote = "*"
 
 [dev-packages]
 
