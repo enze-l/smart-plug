@@ -1,12 +1,7 @@
 import socket
 import uasyncio
+from config.config_manager import ConfigManager
 from api.abstract_api import AbstractAPI
-from .api_config import (
-    SERVER_ADDRESS,
-    SERVER_PORT,
-    SERVER_CONNECTION_RETRY_TIME_SECONDS,
-    UI_INTERFACE_PORT,
-)
 
 
 class API(AbstractAPI):
@@ -19,14 +14,17 @@ class API(AbstractAPI):
         </form>
         <p> setting a non existent server will lead to lagging
         """.format(
-            self.ip_address, UI_INTERFACE_PORT, self.server_address
+            self.ip_address,
+            self.config.get_value("UI_INTERFACE_PORT"),
+            self.server_address,
         )
 
     def __init__(self, hardware):
+        self.config = ConfigManager("/api/implementations/websocket/api_config.json")
         self.relay = hardware.relay_with_led
         self.button = hardware.button_external
         self.ip_address = hardware.get_ip_address()
-        self.server_address = SERVER_ADDRESS
+        self.server_address = self.config.get_value("SERVER_ADDRESS")
         self.connected = False
         self.socket = None
         self.is_running = False
@@ -45,7 +43,7 @@ class API(AbstractAPI):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setblocking(False)
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_socket.bind(("0.0.0.0", UI_INTERFACE_PORT))
+        server_socket.bind(("0.0.0.0", self.config.get_value("UI_INTERFACE_PORT")))
         server_socket.listen()
         while self.__get_is_running():
             try:
@@ -94,18 +92,23 @@ class API(AbstractAPI):
         try:
             print("trying to connect to " + self.server_address)
             self.socket = socket.socket()
-            server_address = socket.getaddrinfo(self.server_address, SERVER_PORT)[0][-1]
+            server_address = socket.getaddrinfo(
+                self.server_address, self.config.get_value("SERVER_PORT")
+            )[0][-1]
             self.socket.connect(server_address)
             self.connected = True
             print("connected to server")
         except OSError:
             self.socket.close()
+            server_connection_retry_time_seconds = self.config.get_value(
+                "SERVER_CONNECTION_RETRY_TIME_SECONDS"
+            )
             print(
                 """trying to connect to server again in {} second ...""".format(
-                    int(SERVER_CONNECTION_RETRY_TIME_SECONDS)
+                    int(server_connection_retry_time_seconds)
                 )
             )
-            await uasyncio.sleep(SERVER_CONNECTION_RETRY_TIME_SECONDS)
+            await uasyncio.sleep(server_connection_retry_time_seconds)
 
     async def __get_message(self):
         data = self.socket.recv(1024)

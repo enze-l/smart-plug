@@ -1,5 +1,4 @@
 import gc
-import os
 import socket
 import urequests
 import time
@@ -20,7 +19,9 @@ class API(AbstractAPI):
             <input name="toggle_threshold" type="number" required value={}>
             <input type="submit" value="Set price Euro/MWh">
         </form>""".format(
-            self.ip_address, self.config.get_value("UI_INTERFACE_PORT"), self.price_threshold_eur
+            self.ip_address,
+            self.config.get_value("UI_INTERFACE_PORT"),
+            self.price_threshold_eur,
         )
 
     def __init__(self, hardware):
