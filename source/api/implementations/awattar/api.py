@@ -1,9 +1,10 @@
 import gc
+import os
 import socket
 import urequests
 import time
 import uasyncio
-from .api_config import TURN_ON_THRESHOLD_EUR, API_PROVIDER_URL, UI_INTERFACE_PORT
+from config.config_manager import ConfigManager
 from api.abstract_api import AbstractAPI
 
 # micropython measure time with seconds since th 1.1.2000
@@ -19,17 +20,18 @@ class API(AbstractAPI):
             <input name="toggle_threshold" type="number" required value={}>
             <input type="submit" value="Set price Euro/MWh">
         </form>""".format(
-            self.ip_address, UI_INTERFACE_PORT, self.price_threshold_eur
+            self.ip_address, self.config.get_value("UI_INTERFACE_PORT"), self.price_threshold_eur
         )
 
     def __init__(self, hardware):
+        self.config = ConfigManager("/api/implementations/awattar/api_config.json")
         self.relay = hardware.relay_with_led
         self.button = hardware.button_external
         self.ip_address = hardware.get_ip_address()
-        self.url = API_PROVIDER_URL
+        self.url = self.config.get_value("API_PROVIDER_URL")
         self.is_running = False
         self.tasks = []
-        self.price_threshold_eur = TURN_ON_THRESHOLD_EUR
+        self.price_threshold_eur = self.config.get_value("TURN_ON_THRESHOLD_EUR")
         self.automation_overriden = False
 
     async def start(self):
@@ -46,7 +48,7 @@ class API(AbstractAPI):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setblocking(False)
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_socket.bind(("0.0.0.0", UI_INTERFACE_PORT))
+        server_socket.bind(("0.0.0.0", self.config.get_value("UI_INTERFACE_PORT")))
         server_socket.listen()
         while self.__get_is_running():
             try:
@@ -63,6 +65,7 @@ class API(AbstractAPI):
         if len(threshold_substring) > 1:
             price_threshold_string = threshold_substring[1].replace("'", "")
             self.price_threshold_eur = int(price_threshold_string)
+            self.config.set_value("TURN_ON_THRESHOLD_EUR", self.price_threshold_eur)
             print("Threshold set to " + price_threshold_string)
             self.__cancel_all_tasks()
             uasyncio.create_task(self.__poll_api())
