@@ -2,14 +2,15 @@ import gc
 import uasyncio
 import socket
 from .api_controller_html import generate_html
-from config.config import CURRENT_API
+from config.config_manager import ConfigManager, STANDARD_CONFIG_FILE_PATH
 
 
 class APIController:
     def __init__(self, hardware):
         self.hardware = hardware
         self.api_cash_dict = {}
-        self.current_api_name = CURRENT_API
+        config = ConfigManager(STANDARD_CONFIG_FILE_PATH)
+        self.current_api_name = config.get_value("CURRENT_API")
         self.api = None
         self.__load_api(self.current_api_name)
 

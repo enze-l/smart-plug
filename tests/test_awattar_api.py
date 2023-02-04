@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("source")  # noqa: E402
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import Mock, AsyncMock, patch, call
@@ -154,7 +155,9 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_process_changes.assert_not_called()
         mock_uasyncio.create_task.assert_called_once()
 
-    @patch("source.api.implementations.awattar.api.API._API__schedule_price_change_reaction")
+    @patch(
+        "source.api.implementations.awattar.api.API._API__schedule_price_change_reaction"
+    )
     def test_process_price_changes(self, mock_schedule_reaction):
         hardware = Mock()
         api = API(hardware)

@@ -1,5 +1,5 @@
 import uasyncio
-from config.config import WIFI_SSID, WIFI_PASSWORD
+from config.config_manager import ConfigManager, STANDARD_CONFIG_FILE_PATH
 from networking.wifi_client import WifiClient
 from networking import ntp_time
 from hardware import hardware
@@ -7,14 +7,12 @@ from api.api_controller import APIController
 
 
 def setup():
-    wifi_client = WifiClient(WIFI_SSID, WIFI_PASSWORD)
+    config = ConfigManager(STANDARD_CONFIG_FILE_PATH)
+    wifi_ssid = config.get_value("WIFI_SSID")
+    wifi_password = config.get_value("WIFI_PASSWORD")
+    wifi_client = WifiClient(wifi_ssid, wifi_password)
     wifi_client.start()
     ntp_time.adjust_own_time()
-
-
-async def run_api_for_ten_seconds(api_controller, api_name):
-    await uasyncio.sleep(10)
-    uasyncio.create_task(api_controller.change_api(api_name))
 
 
 setup()
