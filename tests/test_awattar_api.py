@@ -8,12 +8,13 @@ import warnings
 
 
 class TestAwattarAPI(IsolatedAsyncioTestCase):
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch("source.api.implementations.awattar.api.API._API__get_is_running")
-    async def test_api_should_start_and_stop(self, is_running):
+    async def test_api_should_start_and_stop(self, mock_is_running, mock_get_value):
         warnings.simplefilter("ignore", RuntimeWarning)
         hardware = Mock()
 
-        is_running.side_effect = [True, False]
+        mock_is_running.side_effect = [True, False]
 
         api = API(hardware)
         mock_poll_request = AsyncMock()
@@ -26,7 +27,8 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_poll_request.assert_called_once()
         mock_cancel_tasks.assert_called_once()
 
-    def test_api_should_stop(self):
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
+    def test_api_should_stop(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
 
@@ -40,16 +42,18 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_cancel_tasks.assert_called_once()
         mock_set_is_running.assert_called_once_with(False)
 
-    def test_toggle_relay_should_succeed(self):
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
+    def test_toggle_relay_should_succeed(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
 
         api._API__toggle_relay_if_appropriate(True)
         api._API__toggle_relay_if_appropriate(False)
 
-        hardware.relay.set_on_state.assert_has_calls([call(True), call(False)])
+        hardware.relay_with_led.set_on_state.assert_has_calls([call(True), call(False)])
 
-    def test_toggle_relay_should_fail_automation_overriden(self):
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
+    def test_toggle_relay_should_fail_automation_overriden(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
 
@@ -57,20 +61,22 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         api._API__toggle_relay_if_appropriate(True)
 
-        hardware.relay.set_on_state.assert_not_called()
+        hardware.relay_with_led.set_on_state.assert_not_called()
 
-    def test_toggle_relay_should_reset_automation(self):
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
+    def test_toggle_relay_should_reset_automation(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
 
-        hardware.relay.get_on_state.return_value = True
+        hardware.relay_with_led.get_on_state.return_value = True
         api.automation_overriden = True
 
         api._API__toggle_relay_if_appropriate(True)
 
         assert not api.automation_overriden
 
-    async def test_react_to_price_change_should_toggle_relay_off(self):
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
+    async def test_react_to_price_change_should_toggle_relay_off(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
         mock_relay_toggle_function = Mock()
@@ -84,7 +90,8 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         mock_relay_toggle_function.assert_called_once_with(False)
 
-    async def test_react_to_price_change_should_toggle_relay_on(self):
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
+    async def test_react_to_price_change_should_toggle_relay_on(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
         mock_relay_toggle_function = Mock()
@@ -98,11 +105,12 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         mock_relay_toggle_function.assert_called_once_with(True)
 
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch("source.api.implementations.awattar.api.API._API__react_to_price_change")
     @patch("source.api.implementations.awattar.api.uasyncio")
     @patch("source.api.implementations.awattar.api.time")
     def test_create_scheduled_price_change_reaction(
-        self, mock_time, mock_uasyncio, mock_react_to_price_change
+        self, mock_time, mock_uasyncio, mock_react_to_price_change, mock_get_value
     ):
         warnings.simplefilter("ignore", RuntimeWarning)
         hardware = Mock()
@@ -123,11 +131,12 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_uasyncio.create_task.assert_called_once()
         assert len(api.tasks) == 1
 
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch("source.api.implementations.awattar.api.API._API__process_price_changes")
     @patch("source.api.implementations.awattar.api.urequests")
     @patch("source.api.implementations.awattar.api.uasyncio")
     async def test_poll_api_succeeds(
-        self, mock_uasyncio, mock_urequest, mock_process_changes
+        self, mock_uasyncio, mock_urequest, mock_process_changes, mock_get_value
     ):
         mock_urequest.get().status_code = 200
 
@@ -139,11 +148,12 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_process_changes.assert_called_once()
         mock_uasyncio.create_task.assert_not_called()
 
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch("source.api.implementations.awattar.api.API._API__process_price_changes")
     @patch("source.api.implementations.awattar.api.urequests")
     @patch("source.api.implementations.awattar.api.uasyncio")
     async def test_poll_api_fails(
-        self, mock_uasyncio, mock_urequest, mock_process_changes
+        self, mock_uasyncio, mock_urequest, mock_process_changes, mock_get_value
     ):
         mock_urequest.get().status_code = 404
 
@@ -155,10 +165,11 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_process_changes.assert_not_called()
         mock_uasyncio.create_task.assert_called_once()
 
+    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch(
         "source.api.implementations.awattar.api.API._API__schedule_price_change_reaction"
     )
-    def test_process_price_changes(self, mock_schedule_reaction):
+    def test_process_price_changes(self, mock_schedule_reaction, mock_get_value):
         hardware = Mock()
         api = API(hardware)
 

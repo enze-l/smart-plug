@@ -8,6 +8,7 @@ from unittest.mock import patch, Mock
 sample_ssid = "sample_ssid"
 sample_password = "sample_password"
 host_name = "Micro-Plug"
+
 smart_plug_config_name_var = "SMART_PLUG_NAME"
 
 
