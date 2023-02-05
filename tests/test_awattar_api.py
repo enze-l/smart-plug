@@ -7,8 +7,8 @@ from source.api.implementations.awattar.api import API
 import warnings
 
 
+@patch("source.api.implementations.awattar.api.ConfigManager.get_value")
 class TestAwattarAPI(IsolatedAsyncioTestCase):
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch("source.api.implementations.awattar.api.API._API__get_is_running")
     async def test_api_should_start_and_stop(self, mock_is_running, mock_get_value):
         warnings.simplefilter("ignore", RuntimeWarning)
@@ -27,7 +27,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_poll_request.assert_called_once()
         mock_cancel_tasks.assert_called_once()
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     def test_api_should_stop(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
@@ -42,7 +41,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_cancel_tasks.assert_called_once()
         mock_set_is_running.assert_called_once_with(False)
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     def test_toggle_relay_should_succeed(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
@@ -52,7 +50,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         hardware.relay_with_led.set_on_state.assert_has_calls([call(True), call(False)])
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     def test_toggle_relay_should_fail_automation_overriden(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
@@ -63,7 +60,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         hardware.relay_with_led.set_on_state.assert_not_called()
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     def test_toggle_relay_should_reset_automation(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
@@ -75,7 +71,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         assert not api.automation_overriden
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     async def test_react_to_price_change_should_toggle_relay_off(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
@@ -90,7 +85,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         mock_relay_toggle_function.assert_called_once_with(False)
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     async def test_react_to_price_change_should_toggle_relay_on(self, mock_get_value):
         hardware = Mock()
         api = API(hardware)
@@ -105,7 +99,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         mock_relay_toggle_function.assert_called_once_with(True)
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch("source.api.implementations.awattar.api.API._API__react_to_price_change")
     @patch("source.api.implementations.awattar.api.uasyncio")
     @patch("source.api.implementations.awattar.api.time")
@@ -131,7 +124,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_uasyncio.create_task.assert_called_once()
         assert len(api.tasks) == 1
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch("source.api.implementations.awattar.api.API._API__process_price_changes")
     @patch("source.api.implementations.awattar.api.urequests")
     @patch("source.api.implementations.awattar.api.uasyncio")
@@ -148,7 +140,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_process_changes.assert_called_once()
         mock_uasyncio.create_task.assert_not_called()
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch("source.api.implementations.awattar.api.API._API__process_price_changes")
     @patch("source.api.implementations.awattar.api.urequests")
     @patch("source.api.implementations.awattar.api.uasyncio")
@@ -165,7 +156,6 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         mock_process_changes.assert_not_called()
         mock_uasyncio.create_task.assert_called_once()
 
-    @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
     @patch(
         "source.api.implementations.awattar.api.API._API__schedule_price_change_reaction"
     )
@@ -196,3 +186,25 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         api._API__process_price_changes(data)
         assert mock_schedule_reaction.call_count == 3
+
+    def test_get_html_options(self, mock_get_value):
+        hardware = Mock()
+        api = API(hardware)
+        test_ip_address = "156.156.156.156"
+        api.ip_address = test_ip_address
+        test_price_threshold = 180
+        api.price_threshold_eur = test_price_threshold
+        test_api_port = 8888
+        mock_get_value.return_value = test_api_port
+
+        expected_html = """
+        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+        <form method="post" action="http://156.156.156.156:8888" target="dummyframe">
+            <input name="toggle_threshold" type="number" required value=180>
+            <input type="submit" value="Set price Euro/MWh">
+        </form>"""
+
+        print(expected_html)
+        print(api.get_html_options())
+
+        assert expected_html.replace(" ", "") in api.get_html_options().replace(" ", "")

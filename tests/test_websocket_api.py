@@ -160,3 +160,23 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
         api._API__process_message(bad_message)
 
         api.relay.assert_not_called()
+
+    def test_get_html_options(self, mock_get_value):
+        hardware = Mock()
+        api = API(hardware)
+        test_ip_address = "156.156.156.156"
+        test_server_address = "182.182.182.182"
+        test_api_port = 8888
+        api.ip_address = test_ip_address
+        api.server_address = test_server_address
+        mock_get_value.return_value = test_api_port
+
+        expected_html = """ 
+        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+        <form method="post" action="http://156.156.156.156:8888" target="dummyframe">
+            <input name="server_address" required value=182.182.182.182>
+            <input type="submit" value="Set Server Address">
+        </form>
+        <p>setting a non existent server will lead to lagging<p/>
+        """
+        assert expected_html.replace(" ", "") in api.get_html_options().replace(" ", "")

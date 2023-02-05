@@ -125,7 +125,7 @@ class API(AbstractAPI):
             <input name="server_address" required value={}>
             <input type="submit" value="Set Server Address">
         </form>
-        <p> setting a non existent server will lead to lagging
+        <p>setting a non existent server will lead to lagging<p/>
         """.format(
             self.ip_address,
             self.config.get_value("UI_INTERFACE_PORT"),
