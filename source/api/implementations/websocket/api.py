@@ -5,20 +5,6 @@ from api.abstract_api import AbstractAPI
 
 
 class API(AbstractAPI):
-    def get_html_options(self):
-        return """
-        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
-        <form method="post" action="http://{}:{}" target="dummyframe">
-            <input name="server_address" required value={}>
-            <input type="submit" value="Set Server Address">
-        </form>
-        <p> setting a non existent server will lead to lagging
-        """.format(
-            self.ip_address,
-            self.config.get_value("UI_INTERFACE_PORT"),
-            self.server_address,
-        )
-
     def __init__(self, hardware):
         self.config = ConfigManager("/api/implementations/websocket/api_config.json")
         self.relay = hardware.relay_with_led
@@ -38,6 +24,25 @@ class API(AbstractAPI):
         while self.__get_is_running():
             await self.__establish_connection()
         self.socket.close()
+
+    def stop(self):
+        self.button.reset_functions()
+        self.__set_is_running(False)
+        self.connected = False
+        if self.handle_message_task:
+            self.handle_message_task.cancel()
+        if self.handle_connect_task:
+            self.handle_connect_task.cancel()
+        print("api stopped")
+
+    def __get_is_running(self):
+        return self.is_running
+
+    def __set_is_running(self, is_running):
+        self.is_running = is_running
+
+    def __set_button_behaviour(self):
+        self.button.set_on_toggle_function(self.relay.toggle)
 
     async def __poll_interface_port(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -61,25 +66,6 @@ class API(AbstractAPI):
             self.server_address = server_address_request[1].replace("'", "")
             self.config.set_value("SERVER_ADDRESS", self.server_address)
             print("Server address set to " + self.server_address)
-
-    def stop(self):
-        self.button.reset_functions()
-        self.__set_is_running(False)
-        self.connected = False
-        if self.handle_message_task:
-            self.handle_message_task.cancel()
-        if self.handle_connect_task:
-            self.handle_connect_task.cancel()
-        print("api stopped")
-
-    def __get_is_running(self):
-        return self.is_running
-
-    def __set_is_running(self, is_running):
-        self.is_running = is_running
-
-    def __set_button_behaviour(self):
-        self.button.set_on_toggle_function(self.relay.toggle)
 
     async def __establish_connection(self):
         while not self.connected and self.__get_is_running():
@@ -131,3 +117,17 @@ class API(AbstractAPI):
             self.socket.sendall(self.relay.get_on_state_string())
         else:
             print("Command not recognized")
+
+    def get_html_options(self):
+        return """
+        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+        <form method="post" action="http://{}:{}" target="dummyframe">
+            <input name="server_address" required value={}>
+            <input type="submit" value="Set Server Address">
+        </form>
+        <p> setting a non existent server will lead to lagging
+        """.format(
+            self.ip_address,
+            self.config.get_value("UI_INTERFACE_PORT"),
+            self.server_address,
+        )

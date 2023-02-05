@@ -12,18 +12,6 @@ utc_secs_till_2000 = 946684800
 
 
 class API(AbstractAPI):
-    def get_html_options(self):
-        return """
-        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
-        <form method="post" action="http://{}:{}" target="dummyframe">
-            <input name="toggle_threshold" type="number" required value={}>
-            <input type="submit" value="Set price Euro/MWh">
-        </form>""".format(
-            self.ip_address,
-            self.config.get_value("UI_INTERFACE_PORT"),
-            self.price_threshold_eur,
-        )
-
     def __init__(self, hardware):
         self.config = ConfigManager("/api/implementations/awattar/api_config.json")
         self.relay = hardware.relay_with_led
@@ -41,9 +29,28 @@ class API(AbstractAPI):
         uasyncio.create_task(self.__poll_interface_port())
         while self.__get_is_running():
             self.__cancel_all_tasks()
-            await self.__poll_api()
+            await self.__poll_awattar_api()
             nine_hours_in_seconds = 9 * 60 * 60
             await uasyncio.sleep(nine_hours_in_seconds)
+
+    def stop(self):
+        self.__set_is_running(False)
+        self.__cancel_all_tasks()
+        self.button.reset_functions()
+
+    def __get_is_running(self):
+        return self.is_running
+
+    def __set_is_running(self, is_running):
+        self.is_running = is_running
+
+    async def __poll_awattar_api(self, time_delay=0):
+        await uasyncio.sleep(time_delay)
+        res = urequests.get(self.url)
+        if res.status_code == 200:
+            self.__process_price_changes(res.json()["data"])
+        else:
+            uasyncio.create_task(self.__poll_awattar_api(3))
 
     async def __poll_interface_port(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -69,12 +76,7 @@ class API(AbstractAPI):
             self.config.set_value("TURN_ON_THRESHOLD_EUR", self.price_threshold_eur)
             print("Threshold set to " + price_threshold_string)
             self.__cancel_all_tasks()
-            uasyncio.create_task(self.__poll_api())
-
-    def stop(self):
-        self.__set_is_running(False)
-        self.__cancel_all_tasks()
-        self.button.reset_functions()
+            uasyncio.create_task(self.__poll_awattar_api())
 
     def __cancel_all_tasks(self):
         for task in self.tasks:
@@ -82,26 +84,12 @@ class API(AbstractAPI):
         self.tasks.clear()
         gc.collect()
 
-    def __get_is_running(self):
-        return self.is_running
-
-    def __set_is_running(self, is_running):
-        self.is_running = is_running
-
     def __execute_button_behaviour(self):
         self.relay.toggle()
         self.automation_overriden = True
 
     def __set_button_behaviour(self):
         self.button.set_on_toggle_function(self.__execute_button_behaviour)
-
-    async def __poll_api(self, time_delay=0):
-        await uasyncio.sleep(time_delay)
-        res = urequests.get(self.url)
-        if res.status_code == 200:
-            self.__process_price_changes(res.json()["data"])
-        else:
-            uasyncio.create_task(self.__poll_api(3))
 
     def __process_price_changes(self, data):
         for interval in data:
@@ -134,3 +122,15 @@ class API(AbstractAPI):
             self.automation_overriden = False
         if not self.automation_overriden:
             self.relay.set_on_state(new_state)
+
+    def get_html_options(self):
+        return """
+        <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+        <form method="post" action="http://{}:{}" target="dummyframe">
+            <input name="toggle_threshold" type="number" required value={}>
+            <input type="submit" value="Set price Euro/MWh">
+        </form>""".format(
+            self.ip_address,
+            self.config.get_value("UI_INTERFACE_PORT"),
+            self.price_threshold_eur,
+        )

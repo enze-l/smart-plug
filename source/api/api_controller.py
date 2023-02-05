@@ -14,23 +14,6 @@ class APIController:
         self.api = None
         self.__load_api(self.current_api_name)
 
-    def __import_api(self, api_name):
-        api = __import__(
-            "api.implementations." + api_name + ".api", globals(), locals(), [], 0
-        )
-        self.api = api.API(self.hardware)
-        self.api_cash_dict[api_name] = self.api
-
-    def __load_api(self, api_name):
-        if api_name in self.api_cash_dict:
-            print("api loaded from cash")
-            self.api = self.api_cash_dict[api_name]
-        else:
-            print("api loaded from memory")
-            self.__import_api(api_name)
-        self.current_api_name = api_name
-        gc.collect()
-
     async def start_api(self):
         await self.api.start()
 
@@ -54,6 +37,23 @@ class APIController:
             except OSError:
                 pass
             await uasyncio.sleep(0)
+
+    def __import_api(self, api_name):
+        api = __import__(
+            "api.implementations." + api_name + ".api", globals(), locals(), [], 0
+        )
+        self.api = api.API(self.hardware)
+        self.api_cash_dict[api_name] = self.api
+
+    def __load_api(self, api_name):
+        if api_name in self.api_cash_dict:
+            print("api loaded from cash")
+            self.api = self.api_cash_dict[api_name]
+        else:
+            print("api loaded from memory")
+            self.__import_api(api_name)
+        self.current_api_name = api_name
+        gc.collect()
 
     def __accept_requests(self, server_socket):
         connection, address = server_socket.accept()

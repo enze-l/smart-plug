@@ -18,7 +18,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
 
         api = API(hardware)
         mock_poll_request = AsyncMock()
-        api._API__poll_api = mock_poll_request
+        api._API__poll_awattar_api = mock_poll_request
         mock_cancel_tasks = Mock()
         api._API__cancel_all_tasks = mock_cancel_tasks
 
@@ -143,7 +143,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         hardware = Mock()
         api = API(hardware)
 
-        await api._API__poll_api()
+        await api._API__poll_awattar_api()
 
         mock_process_changes.assert_called_once()
         mock_uasyncio.create_task.assert_not_called()
@@ -160,7 +160,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
         hardware = Mock()
         api = API(hardware)
 
-        await api._API__poll_api()
+        await api._API__poll_awattar_api()
 
         mock_process_changes.assert_not_called()
         mock_uasyncio.create_task.assert_called_once()
