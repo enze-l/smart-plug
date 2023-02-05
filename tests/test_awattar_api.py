@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("source")  # noqa: E402
 
 from unittest import IsolatedAsyncioTestCase
@@ -146,6 +147,7 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
     async def test_poll_api_fails(
         self, mock_uasyncio, mock_urequest, mock_process_changes, mock_get_value
     ):
+        warnings.simplefilter("ignore", RuntimeWarning)
         mock_urequest.get().status_code = 404
 
         hardware = Mock()
@@ -203,8 +205,5 @@ class TestAwattarAPI(IsolatedAsyncioTestCase):
             <input name="toggle_threshold" type="number" required value=180>
             <input type="submit" value="Set price Euro/MWh">
         </form>"""
-
-        print(expected_html)
-        print(api.get_html_options())
 
         assert expected_html.replace(" ", "") in api.get_html_options().replace(" ", "")

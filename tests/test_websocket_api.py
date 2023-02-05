@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("source")  # noqa: E402
 
 from unittest import IsolatedAsyncioTestCase
@@ -110,7 +111,9 @@ class TestWebsocketAPI(IsolatedAsyncioTestCase):
         mock_process_message.assert_called_with(message_decoded)
 
     @patch("source.api.implementations.websocket.api.API._API__process_message")
-    async def test_get_message_fails_broke_pipe(self, mock_process_message, mock_get_value):
+    async def test_get_message_fails_broke_pipe(
+        self, mock_process_message, mock_get_value
+    ):
         message_encoded = b""
         hardware = Mock()
         api = API(hardware)
