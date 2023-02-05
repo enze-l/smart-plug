@@ -1,3 +1,6 @@
+import sys
+sys.path.append("source")  # noqa: E402
+
 import network
 import machine
 from config.config_manager import ConfigManager, STANDARD_CONFIG_FILE_PATH

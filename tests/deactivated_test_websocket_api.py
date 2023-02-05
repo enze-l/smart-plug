@@ -1,6 +1,6 @@
 import sys
-
 sys.path.append("source")  # noqa: E402
+
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock, patch
 from source.api.implementations.websocket.api import API
