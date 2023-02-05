@@ -59,6 +59,7 @@ class API(AbstractAPI):
         server_address_request = request.split("server_address=")
         if len(server_address_request) > 1:
             self.server_address = server_address_request[1].replace("'", "")
+            self.config.set_value("SERVER_ADDRESS", self.server_address)
             print("Server address set to " + self.server_address)
 
     def stop(self):
