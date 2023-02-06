@@ -9,8 +9,8 @@ class APIController:
     def __init__(self, hardware):
         self.hardware = hardware
         self.api_cash_dict = {}
-        config = ConfigManager(STANDARD_CONFIG_FILE_PATH)
-        self.current_api_name = config.get_value("CURRENT_API")
+        self.config = ConfigManager(STANDARD_CONFIG_FILE_PATH)
+        self.current_api_name = self.config.get_value("CURRENT_API")
         self.api = None
         self.__load_api(self.current_api_name)
 
@@ -69,6 +69,7 @@ class APIController:
     def __set_api(self, api_name):
         if api_name != self.current_api_name:
             self.api.stop()
+            self.config.set_value("CURRENT_API", api_name)
             self.__load_api(api_name)
             event_loop = uasyncio.get_event_loop()
             event_loop.create_task(self.api.start())
