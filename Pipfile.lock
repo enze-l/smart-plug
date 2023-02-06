@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f22d7269a24f2b16a386374fe6465aeff9532cd750cda3d36e48f4f9115b9e0b"
+            "sha256": "1fed288ce36f374a51170b22060d71d8a8c3b8b61ec9791027d60e0d1b71d1d1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -199,6 +199,14 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==0.7.0"
+        },
+        "mpremote": {
+            "hashes": [
+                "sha256:c530cdb700f4938ba14f161c6761767484f0ee65ec555d846c2334fb01c53c00",
+                "sha256:f683b7a20be6844c771d759ab5e42a3d9162cb70a1f6fd678792526f28a906c8"
+            ],
+            "index": "pypi",
+            "version": "==0.4.0"
         },
         "mypy-extensions": {
             "hashes": [

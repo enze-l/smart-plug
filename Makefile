@@ -21,7 +21,7 @@ deploy: development-dependencies
 	@pipenv run rshell -p $(BOARD_PORT) rsync -m ./source /pyboard
 
 run: development-dependencies
-	@pipenv run ampy --port $(BOARD_PORT) run $(START_SCRIPT)
+	@pipenv run mpremote connect $(BOARD_PORT) exec "import main"
 
 deploy-run: deploy run
 
