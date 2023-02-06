@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("source")  # noqa: E402
-
 from unittest import TestCase
 from source.networking.wifi_client import WifiClient
 from unittest.mock import patch, Mock

@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("source")  # noqa: E402
-
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import Mock, AsyncMock, patch, call
 from source.api.implementations.awattar.api import API
