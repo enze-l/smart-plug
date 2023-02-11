@@ -47,10 +47,10 @@ class APIController:
 
     def __load_api(self, api_name):
         if api_name in self.api_cash_dict:
-            print("api loaded from cash")
+            print(api_name + " api loaded from cash")
             self.api = self.api_cash_dict[api_name]
         else:
-            print("api loaded from memory")
+            print(api_name + " api loaded from memory")
             self.__import_api(api_name)
         self.current_api_name = api_name
         gc.collect()
@@ -64,7 +64,7 @@ class APIController:
         html = generate_html(self.api, self.current_api_name)
         connection.sendall(html)
         connection.close()
-        print("Webpage requested")
+        print("http requested processed")
 
     def __set_api(self, api_name):
         if api_name != self.current_api_name:

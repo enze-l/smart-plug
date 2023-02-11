@@ -1,5 +1,4 @@
 import ntptime
-import time
 
 
 def adjust_own_time():
@@ -11,4 +10,4 @@ def adjust_own_time():
             succeeded = True
         except OSError:
             print("NTP server couldn't be reached. Trying again ...")
-    print("current utc time is " + str(time.localtime()))
+    print("current time has been set")

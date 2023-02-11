@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append("source")  # noqa: E402
-
 import network
 import machine
 from config.config_manager import ConfigManager, STANDARD_CONFIG_FILE_PATH
@@ -18,7 +14,7 @@ class WifiClient:
         try:
             if not self.wifi.isconnected():
                 self.try_connecting()
-            print("network config:", self.wifi.ifconfig())
+            print("UI will be available under http://" + self.wifi.ifconfig()[0])
         except OSError as error:
             print(error)
             machine.reset()
