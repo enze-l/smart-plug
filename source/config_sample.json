@@ -1,0 +1,14 @@
+{
+  "SMART_PLUG_NAME": "Smart-Plug",
+  "WIFI_SSID": "sample_ssid",
+  "WIFI_PASSWORD": "sample_password",
+  "CURRENT_API": "awattar",
+  "LED_PIN": 0,
+  "LED_IS_INVERTED": true,
+  "RELAY_PIN": 26,
+  "RELAY_IS_INVERTED": false,
+  "BUTTON_INTERNAL_PIN": 25,
+  "BUTTON_INTERNAL_IS_INVERTED": true,
+  "BUTTON_EXTERNAL_PIN": 4,
+  "BUTTON_EXTERNAL_IS_INVERTED": false
+}
