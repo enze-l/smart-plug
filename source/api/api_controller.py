@@ -39,9 +39,8 @@ class APIController:
             await uasyncio.sleep(0)
 
     def __import_api(self, api_name):
-        api = __import__(
-            "api.implementations." + api_name + ".api", globals(), locals(), [], 0
-        )
+        api_path = "api.implementations." + api_name + ".api"
+        api = __import__(api_path, globals(), locals(), [], 0)
         self.api = api.API(self.hardware)
         self.api_cash_dict[api_name] = self.api
 

@@ -110,7 +110,11 @@ class API(AbstractAPI):
 
     async def __react_to_price_change(self, time_till_execution, price):
         await uasyncio.sleep(time_till_execution)
-        print("price change processed. " + str(time_till_execution) + " seconds from last api fetch")
+        print(
+            "price change processed for {} seconds after last api fetch".format(
+                time_till_execution
+            )
+        )
         if price <= self.price_threshold_eur:
             self.__toggle_relay_if_appropriate(True)
         else:

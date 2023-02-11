@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, Mock, patch
 from source.api.implementations.websocket.api import API
 
 
-@patch("source.api.implementations.awattar.api.ConfigManager.get_value")
+@patch("source.api.implementations.websocket.api.ConfigManager.get_value")
 class TestWebsocketAPI(IsolatedAsyncioTestCase):
     @patch("source.api.implementations.websocket.api.API._API__set_button_behaviour")
     async def test_start_api(self, mock_button_behaviour, mock_get_value):

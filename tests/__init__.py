@@ -1,4 +1,7 @@
 import sys
+import warnings
+
+warnings.simplefilter("ignore", RuntimeWarning)
 
 sys.path.append("source")  # noqa: E402
 

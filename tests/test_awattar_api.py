@@ -1,7 +1,7 @@
+import warnings
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import Mock, AsyncMock, patch, call
 from source.api.implementations.awattar.api import API
-import warnings
 
 
 @patch("source.api.implementations.awattar.api.ConfigManager.get_value")
