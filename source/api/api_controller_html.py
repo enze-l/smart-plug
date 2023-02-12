@@ -30,13 +30,13 @@ def generate_html(api, current_api_name):
                 <div/>
               </body>
             </html>""".format(
-        __get_api_html_options(current_api_name),
+        __get_api_options(current_api_name),
         current_api_name,
         api.get_html_options(),
     )
 
 
-def __get_api_html_options(current_api_name):
+def __get_api_options(current_api_name):
     api_options = []
     for file in os.ilistdir("/api/implementations/"):
         if (file[1] == 0x4000) and (file[0] != "template_api"):

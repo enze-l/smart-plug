@@ -31,6 +31,9 @@ class APIController:
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind(("0.0.0.0", 80))
         server_socket.listen()
+        await self.__accept_requests_forever(server_socket)
+
+    async def __accept_requests_forever(self, server_socket):
         while True:
             try:
                 self.__accept_requests(server_socket)

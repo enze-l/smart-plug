@@ -73,3 +73,43 @@ class TestAPIController(IsolatedAsyncioTestCase):
 
         assert mock_import_api.call_count == 1
         assert api_controller.current_api_name == test_api_name
+
+    @patch("source.api.api_controller.ConfigManager")
+    @patch("source.api.api_controller.socket")
+    @patch("source.api.api_controller.APIController._APIController__import_api")
+    @patch("source.api.api_controller.APIController._APIController__accept_requests_forever")
+    async def test_serve_ui(self, mock_accept_requests, mock_import_api, mock_socket, mock_config):
+        hardware = Mock()
+        api_controller = APIController(hardware)
+
+        await api_controller.serve_ui()
+
+        mock_socket.socket.assert_called_once()
+        mock_socket.socket().setblocking.assert_called_once_with(False)
+        mock_socket.socket().setsockopt.assert_called_once()
+        mock_socket.socket().bind.assert_called_once()
+        mock_socket.socket().listen.assert_called_once()
+        mock_accept_requests.assert_called_once()
+
+    @patch("source.api.api_controller.ConfigManager")
+    @patch("source.api.api_controller.socket")
+    @patch("source.api.api_controller.APIController._APIController__import_api")
+    @patch("source.api.api_controller.generate_html")
+    def test_accept_requests(self, mock_generate_html, mock_import_api, mock_config_manager, mock_socket, ):
+        hardware = Mock()
+        api_controller = APIController(hardware)
+
+        mock_socket = Mock()
+        mock_connection = Mock()
+        mock_address = "186.158.156.156"
+
+        def mock_accept():
+            return mock_connection, mock_address
+        mock_socket.accept = mock_accept
+        api_controller._APIController__accept_requests(mock_socket)
+
+        mock_generate_html.assert_called_once()
+        mock_connection.sendall.assert_called_once()
+        mock_connection.close.assert_called_once()
+
+
