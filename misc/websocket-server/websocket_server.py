@@ -21,6 +21,7 @@ class WebsocketServer:
 
     def connect(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             server_socket.bind(("0.0.0.0", WEBSOCKET_PORT))
             while self.running:
                 server_socket.listen()

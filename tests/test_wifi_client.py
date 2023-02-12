@@ -6,30 +6,36 @@ sample_ssid = "sample_ssid"
 sample_password = "sample_password"
 host_name = "Micro-Plug"
 
+smart_plug_config_name_var = "SMART_PLUG_NAME"
+
 
 class TestWifi(TestCase):
+    @patch("source.networking.wifi_client.ConfigManager.get_value")
     @patch("source.networking.wifi_client.network.WLAN")
-    def test_wifi_should_connect(self, wifi):
+    def test_wifi_should_connect(self, mock_wifi, mock_config):
         wifi_client = WifiClient(sample_ssid, sample_password)
+        mock_config.side_effect = host_name
 
         wifi_client.try_connecting()
 
-        wifi().active.assert_called_once_with(True)
-        wifi().config.assert_called_once_with(dhcp_hostname=host_name)
-        wifi().connect.assert_called_once_with(sample_ssid, sample_password)
-        wifi().isconnected.assert_called_once()
+        mock_wifi().active.assert_called_once_with(True)
+        mock_config.assert_called_once_with(smart_plug_config_name_var)
+        mock_wifi().connect.assert_called_once_with(sample_ssid, sample_password)
+        mock_wifi().isconnected.assert_called_once()
 
+    @patch("source.networking.wifi_client.ConfigManager.get_value")
     @patch("source.networking.wifi_client.network.WLAN")
-    def test_wifi_should_connect_after_retries(self, wifi):
+    def test_wifi_should_connect_after_retries(self, mock_wifi, mock_config):
         wifi_client = WifiClient(sample_ssid, sample_password)
-        wifi().isconnected.side_effect = [False, False, True]
+        mock_wifi().isconnected.side_effect = [False, False, True]
+        mock_config.side_effect = host_name
 
         wifi_client.try_connecting()
 
-        wifi().active.assert_called_once_with(True)
-        wifi().config.assert_called_once_with(dhcp_hostname=host_name)
-        wifi().connect.assert_called_once_with(sample_ssid, sample_password)
-        assert wifi().isconnected.call_count == 3
+        mock_wifi().active.assert_called_once_with(True)
+        mock_config.assert_called_once_with(smart_plug_config_name_var)
+        mock_wifi().connect.assert_called_once_with(sample_ssid, sample_password)
+        assert mock_wifi().isconnected.call_count == 3
 
     @patch("source.networking.wifi_client.network.WLAN")
     def test_wifi_should_start(self, wifi):

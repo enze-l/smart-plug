@@ -1,11 +1,12 @@
 BOARD_PORT ?= /dev/ttyUSB0
+START_SCRIPT ?= ./source/main.py
 MICROPYTHON_FIRMWARE_PATH ?= ./misc/firmware/firmware.bin
 
 development-dependencies:
 	@pipenv sync --dev
 
 lint: development-dependencies
-	@pipenv run flake8
+	@pipenv run flake8 --ignore=E402
 
 fix-lint: development-dependencies
 	@pipenv run black .
@@ -20,7 +21,9 @@ deploy: development-dependencies
 	@pipenv run rshell -p $(BOARD_PORT) rsync -m ./source /pyboard
 
 run: development-dependencies
-	@pipenv run mpremote connect $(BOARD_PORT) mount ./source exec "import main"
+	@pipenv run mpremote connect $(BOARD_PORT) exec "import main"
+
+deploy-run: deploy run
 
 install-firmware: development-dependencies
 	@echo "GET BOARD INTO BOOT MODE OR THIS WILL FAIL!"
