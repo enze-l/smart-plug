@@ -41,5 +41,3 @@ class TestAPIControllerHTML(TestCase):
             </html>"""
 
         assert expected_html.replace(" ", "") in test_html.replace(" ", "")
-
-
