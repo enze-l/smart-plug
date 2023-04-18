@@ -15,7 +15,7 @@ class API(AbstractAPI):
     def __init__(self, hardware):
         self.config = ConfigManager("/api/implementations/awattar/api_config.json")
         self.relay = hardware.relay_with_led
-        self.button = hardware.button_external
+        self.button = hardware.button_internal
         self.ip_address = hardware.get_ip_address()
         self.url = self.config.get_value("API_PROVIDER_URL")
         self.is_running = False
@@ -89,7 +89,7 @@ class API(AbstractAPI):
         self.automation_overriden = True
 
     def __set_button_behaviour(self):
-        self.button.set_on_toggle_function(self.__execute_button_behaviour)
+        self.button.set_on_click_function(self.__execute_button_behaviour)
 
     def __process_price_changes(self, data):
         for interval in data:

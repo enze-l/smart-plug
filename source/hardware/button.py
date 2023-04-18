@@ -12,7 +12,7 @@ class Button:
         self.debounce_delay = debounce_delay_ms
         self.last_click_time = time.ticks_ms()
         self.last_button_state = None
-        self.pin.irq(handler=self.__debounce_input)
+        self.pin.irq(lambda p: self.__debounce_input())
 
     def set_on_click_function(self, function):
         self.on_click_function = function
